@@ -1,0 +1,15 @@
+{
+  "name": "frizider-vts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:back\" \"npm run dev:front\"",
+    "dev:front": "npm start --prefix frontend",
+    "dev:back": "/Applications/XAMPP/xamppfiles/bin/php -S localhost:8000 -t backend",
+    "build": "npm run build --prefix frontend",
+    "install:front": "npm install --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
