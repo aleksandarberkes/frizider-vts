@@ -1,0 +1,203 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.navbar {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	background-color: #fff;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar-container {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	position: relative;
+}
+
+.navbar-inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px;
+}
+
+.navbar-logo {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	text-decoration: none;
+	color: #111827;
+}
+
+.navbar-logo-image {
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
+}
+
+.navbar-logo-text {
+	font-size: 24px;
+	font-weight: 700;
+	color: #15803d;
+}
+
+.desktop-navigation,
+.desktop-auth-buttons {
+	display: none;
+	align-items: center;
+}
+
+.desktop-navigation {
+	gap: 4px;
+}
+
+.desktop-auth-buttons {
+	gap: 8px;
+}
+
+.nav-link {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px;
+	text-decoration: none;
+	color: #4b5563;
+	transition: color 0.5s ease;
+}
+
+.nav-link:hover {
+	color: #15803d;
+}
+
+.nav-link img {
+	transition: filter 0.5s ease;
+}
+
+.nav-link:hover img {
+	filter: brightness(0) saturate(100%) invert(37%) sepia(17%) saturate(2926%)
+		hue-rotate(96deg) brightness(94%) contrast(84%) !important;
+}
+
+.nav-link-icon,
+.mobile-nav-icon {
+	font-size: 18px;
+	line-height: 1;
+}
+
+.nav-link img {
+	width: 16px;
+	height: 16px;
+}
+
+.btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 40px;
+	padding: 10px 16px;
+	border: 1px solid #d1d5db;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 500;
+	color: #111827;
+	background-color: #fff;
+	border-radius: 6px;
+}
+.btn-ghost:hover {
+	background-color: #f3f4f6;
+	color: #15803d;
+	transition: 0.5s ease;
+}
+.btn-primary {
+	background-color: #16a34a;
+	border-color: #0a4e23;
+	color: #fff;
+}
+.btn-primary:hover {
+	background-color: #0a4e25;
+	border-color: #16a34a;
+	transition: 0.5s ease;
+}
+.btn-mobile {
+	margin: 0 12px;
+}
+.mobile-menu-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 8px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+}
+
+.mobile-menu-button img {
+	width: 24px;
+	height: 24px;
+	transition: transform 0.25s ease;
+}
+
+.mobile-menu-button--open img {
+	transform: rotate(90deg);
+}
+
+.mobile-navigation {
+	display: block;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	max-height: 0;
+	overflow: hidden;
+	padding: 0;
+	border-top: 1px solid #e5e7eb;
+	background-color: #fff;
+	opacity: 0;
+	z-index: 60;
+	box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+	transition:
+		max-height 0.25s ease,
+		opacity 0.2s ease;
+}
+
+.mobile-navigation.mobile-navigation--open {
+	max-height: 480px;
+	opacity: 1;
+	padding: 0 0 16px;
+}
+
+.mobile-navigation-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding-top: 16px;
+	transform: translateY(-8px);
+	transition: transform 0.25s ease;
+}
+
+.mobile-navigation.mobile-navigation--open .mobile-navigation-list {
+	transform: translateY(0);
+}
+
+.mobile-divider {
+	height: 1px;
+	margin: 8px 0;
+	background-color: #e5e7eb;
+}
+
+@media (min-width: 1024px) {
+	.desktop-navigation,
+	.desktop-auth-buttons {
+		display: flex;
+	}
+
+	.mobile-menu-button,
+	.mobile-navigation {
+		display: none;
+	}
+}
