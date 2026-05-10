@@ -2,7 +2,7 @@
 
 define('DB_HOST', 'localhost');
 define('DB_PORT', '3306');
-define('DB_NAME', 'frizider_vts');
+define('DB_NAME', 'fridge');
 define('DB_USER', 'root');
 define('DB_PASS', '');  // XAMPP default is no password
 
