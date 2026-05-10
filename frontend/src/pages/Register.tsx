@@ -1,10 +1,12 @@
+import RegisterForm from "../components/auth/register/RegisterForm";
+
 function Register() {
-  return (
-    <section>
-      <h1>Registracija</h1>
-      <p>Ovde ce biti prikazana forma za registraciju.</p>
-    </section>
-  );
+	return (
+		<section>
+			<h1>Registracija</h1>
+			<RegisterForm />
+		</section>
+	);
 }
 
 export default Register;

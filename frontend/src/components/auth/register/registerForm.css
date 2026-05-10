@@ -1,0 +1,182 @@
+.register-main-container {
+	padding: 12px;
+}
+
+.register-card {
+	max-width: 500px;
+	margin: 0 auto;
+	padding: 24px 18px 22px;
+	border: 2px solid #e1e1e1;
+	border-radius: 24px;
+	background: #ffffff;
+}
+
+.register-form-header {
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+.register-form-header h1 {
+	margin: 0;
+	color: #121212;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+.register-form-header p {
+	margin-top: 10px;
+	color: #71738d;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.25;
+}
+
+.register-form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.register-field {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+.register-field:first-child{
+    margin-bottom: 8px;
+}
+.register-field label {
+	color: #161616;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.register-field input {
+	width: 100%;
+	height: 48px;
+	padding: 0 14px;
+	border: 0;
+	border-radius: 14px;
+	background: #f3f3f6;
+	color: #6f7287;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1;
+	box-sizing: border-box;
+}
+
+.register-input-wrap {
+	position: relative;
+}
+
+.register-input-wrap .register-input {
+	padding-left: 42px;
+}
+
+.register-input-email .register-input {
+	border: 2px solid #b0b0b0;
+	background: #f6f6f8;
+}
+
+.register-input-icon {
+	position: absolute;
+	top: 50%;
+	left: 14px;
+	width: 16px;
+	height: 16px;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+.register-field input::placeholder {
+	color: #6f7287;
+}
+
+.register-checkbox-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 4px;
+	color: #4d5870;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.3;
+	cursor: pointer;
+}
+
+.register-checkbox-row input {
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	border-radius: 4px;
+	flex-shrink: 0;
+}
+
+.register-checkbox-row a {
+	color: #05aa44;
+	text-decoration: none;
+}
+
+.register-submit-button {
+	width: 100%;
+	height: 52px;
+	border: 0;
+	border-radius: 14px;
+	background: #08c952;
+	color: #ffffff;
+	font-size: 16px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+	.register-card {
+		padding: 32px 36px 28px;
+		border-radius: 28px;
+	}
+
+	.register-form-header h1 {
+		font-size: 24px;
+	}
+
+	.register-form-header p {
+		font-size: 16px;
+	}
+
+	.register-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 24px;
+	}
+
+	.register-field label {
+		font-size: 16px;
+	}
+
+	.register-field input {
+		height: 56px;
+		padding: 0 18px;
+		font-size: 16px;
+	}
+
+	.register-input-wrap .register-input {
+		padding-left: 50px;
+	}
+
+	.register-input-icon {
+		left: 18px;
+		width: 18px;
+		height: 18px;
+	}
+
+	.register-checkbox-row {
+		font-size: 16px;
+	}
+
+	.register-submit-button {
+		height: 58px;
+		font-size: 18px;
+	}
+}
