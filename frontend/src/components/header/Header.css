@@ -70,6 +70,13 @@
 	transition: color 0.5s ease;
 }
 
+.nav-link-button {
+	border: none;
+	background: transparent;
+	font: inherit;
+	cursor: pointer;
+}
+
 .nav-link:hover {
 	color: #15803d;
 }
@@ -107,6 +114,7 @@
 	color: #111827;
 	background-color: #fff;
 	border-radius: 6px;
+	cursor: pointer;
 }
 .btn-ghost:hover {
 	background-color: #f3f4f6;
@@ -124,6 +132,23 @@
 	transition: 0.5s ease;
 }
 .btn-mobile {
+	margin: 0 12px;
+}
+
+.navbar-user-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 40px;
+	padding: 8px 14px;
+	border-radius: 999px;
+	background: #dcfce7;
+	color: #166534;
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.navbar-user-badge--mobile {
 	margin: 0 12px;
 }
 .mobile-menu-button {

@@ -75,11 +75,6 @@
 	padding-left: 42px;
 }
 
-.register-input-email .register-input {
-	border: 2px solid #b0b0b0;
-	background: #f6f6f8;
-}
-
 .register-input-icon {
 	position: absolute;
 	top: 50%;
@@ -129,6 +124,30 @@
 	font-size: 16px;
 	font-weight: 700;
 	cursor: pointer;
+}
+
+.register-submit-button:disabled {
+	opacity: 0.7;
+	cursor: wait;
+}
+
+.register-form-message {
+	margin: 0;
+	padding: 12px 14px;
+	border-radius: 14px;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.register-form-error {
+	background: #fff1f1;
+	color: #b42318;
+}
+
+.register-form-success {
+	background: #edfdf3;
+	color: #027a48;
 }
 
 @media (min-width: 1024px) {

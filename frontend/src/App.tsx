@@ -1,11 +1,43 @@
 import './App.css';
-import ExampleApp from './examples/ExampleApp';
+import { Route, Routes } from 'react-router-dom';
+import Layout from './layout/Layout';
+import RequireAdmin from './components/auth/RequireAdmin';
+import RequireAuth from './components/auth/RequireAuth';
+import AdminDashboard from './pages/AdminDashboard';
+import Favorites from './pages/Favorites';
+import Fridge from './pages/Fridge';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Recepti from './pages/Recepti';
+import Register from './pages/Register';
 
 function App() {
   return (
-    <div className="App">
-      <ExampleApp />
-    </div>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/recipes" element={<Recepti />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route
+          path="/fridge"
+          element={
+            <RequireAuth>
+              <Fridge />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <RequireAdmin>
+              <AdminDashboard />
+            </RequireAdmin>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+    </Routes>
   );
 }
 
