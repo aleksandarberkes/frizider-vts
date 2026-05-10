@@ -1,8 +1,8 @@
-CREATE DATABASE IF NOT EXISTS recipe
+CREATE DATABASE IF NOT EXISTS fridge
   DEFAULT CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE recipe;
+USE fridge;
 
 CREATE TABLE roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -116,14 +116,14 @@ INSERT INTO roles (id, name) VALUES
 (2, 'user');
 
 INSERT INTO users (id, email, password_hash, first_name, last_name, phone, role_id, is_active) VALUES
-(1, 'admin1@mojfrizider.rs', '$2y$10$abcdefghijklmnopqrstuv', 'Marko', 'Adminović', '0601111111', 1, 1),
-(2, 'admin2@mojfrizider.rs', '$2y$10$abcdefghijklmnopqrstuv', 'Jelena', 'Adminić', '0602222222', 1, 1),
+(1, 'admin1@mojfrizider.rs', '$2y$10$r0hVnIRhw8LXhMpAX/8cNOPKOh7uqzYacS9ytWFaBY6r0quYp8cNK', 'Marko', 'Adminović', '0601111111', 1, 1),
+(2, 'admin2@mojfrizider.rs', '$2y$10$r0hVnIRhw8LXhMpAX/8cNOPKOh7uqzYacS9ytWFaBY6r0quYp8cNK', 'Jelena', 'Adminić', '0602222222', 1, 1),
 
-(3, 'pera@gmail.com', '$2y$10$abcdefghijklmnopqrstuv', 'Petar', 'Petrović', '0633333333', 2, 1),
-(4, 'mika@gmail.com', '$2y$10$abcdefghijklmnopqrstuv', 'Milan', 'Milić', '0644444444', 2, 1),
-(5, 'ana@gmail.com',  '$2y$10$abcdefghijklmnopqrstuv', 'Ana', 'Anđelić', '0655555555', 2, 1),
-(6, 'iva@gmail.com',  '$2y$10$abcdefghijklmnopqrstuv', 'Ivana', 'Ivić', '0666666666', 2, 1),
-(7, 'luka@gmail.com', '$2y$10$abcdefghijklmnopqrstuv', 'Luka', 'Lukić', '0677777777', 2, 1);
+(3, 'pera@gmail.com', '$2y$10$r0hVnIRhw8LXhMpAX/8cNOPKOh7uqzYacS9ytWFaBY6r0quYp8cNK', 'Petar', 'Petrović', '0633333333', 2, 1),
+(4, 'mika@gmail.com', '$2y$10$r0hVnIRhw8LXhMpAX/8cNOPKOh7uqzYacS9ytWFaBY6r0quYp8cNK', 'Milan', 'Milić', '0644444444', 2, 1),
+(5, 'ana@gmail.com',  '$2y$10$r0hVnIRhw8LXhMpAX/8cNOPKOh7uqzYacS9ytWFaBY6r0quYp8cNK', 'Ana', 'Anđelić', '0655555555', 2, 1),
+(6, 'iva@gmail.com',  '$2y$10$r0hVnIRhw8LXhMpAX/8cNOPKOh7uqzYacS9ytWFaBY6r0quYp8cNK', 'Ivana', 'Ivić', '0666666666', 2, 1),
+(7, 'luka@gmail.com', '$2y$10$r0hVnIRhw8LXhMpAX/8cNOPKOh7uqzYacS9ytWFaBY6r0quYp8cNK', 'Luka', 'Lukić', '0677777777', 2, 1);
 
 INSERT INTO ingredients (id, name, unit) VALUES
 (1, 'Jaja', 'kom'),
