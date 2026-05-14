@@ -1,8 +1,17 @@
+import { Outlet } from 'react-router-dom';
+import FridgeTabs from '../components/auth/fridge-tabs/FridgeTabs';
+import './Fridge.css';
+
 function Fridge() {
   return (
-    <section>
-      <h1>Moj frizider</h1>
-      <p>Ovde ce biti prikazan sadrzaj vaseg frizidera.</p>
+    <section className="fridge-page">
+      <div className="fridge-shell">
+        <FridgeTabs />
+
+        <div className="fridge-panel">
+          <Outlet />
+        </div>
+      </div>
     </section>
   );
 }

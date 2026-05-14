@@ -56,4 +56,11 @@ function post<T>(path: string, body?: unknown) {
   });
 }
 
-export const api = { get, post };
+function put<T>(path: string, body?: unknown) {
+  return request<T>(path, {
+    method: 'PUT',
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+}
+
+export const api = { get, post, put };

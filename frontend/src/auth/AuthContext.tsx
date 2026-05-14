@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { api, ApiError } from '../api';
 import { User } from './types';
+import { useNavigate } from 'react-router-dom';
 
 type AuthState = {
   user: User | null;
@@ -24,6 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const refresh = useCallback(async () => {
     try {
@@ -66,8 +68,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setUser(null);
       setError(null);
+      navigate('/', { replace: true });
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout, refresh }}>
