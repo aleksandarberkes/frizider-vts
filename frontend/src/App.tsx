@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import Layout from './layout/Layout';
 import RequireAdmin from './components/auth/RequireAdmin';
 import RequireAuth from './components/auth/RequireAuth';
+import RequireGuest from './components/auth/RequireGuest';
 import AdminDashboard from './pages/AdminDashboard';
 import AccountSettings from './pages/AccountSettings';
 import Favorites from './pages/Favorites';
@@ -44,8 +45,22 @@ function App() {
             </RequireAdmin>
           }
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={
+            <RequireGuest>
+              <Login />
+            </RequireGuest>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <RequireGuest>
+              <Register />
+            </RequireGuest>
+          }
+        />
       </Route>
     </Routes>
   );

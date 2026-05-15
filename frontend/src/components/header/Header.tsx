@@ -107,9 +107,9 @@ const Header = () => {
 					<div className="desktop-auth-buttons">
 						{user ? (
 							<>
-								<span className="navbar-user-badge">
+								{/* <span className="navbar-user-badge">
 									{user.role_name === "admin" ? "Admin" : "Korisnik"}
-								</span>
+								</span> */}
 								<button type="button" className="btn btn-ghost" onClick={handleLogout}>
 									Odjava
 								</button>
