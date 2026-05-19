@@ -1,0 +1,232 @@
+.recipe-details-page {
+  display: grid;
+  gap: 22px;
+}
+
+.recipe-details-page__back {
+  color: #101828;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.recipe-details-page__layout {
+  display: grid;
+  gap: 24px;
+}
+
+.recipe-details-page__main {
+  display: grid;
+  gap: 24px;
+}
+
+.recipe-details-page__sidebar {
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+
+.recipe-details-page__hero-card,
+.recipe-details-page__steps,
+.recipe-details-page__sidebar-card,
+.recipe-details-page__placeholder,
+.recipe-details-page__error {
+  border: 1px solid #e9ddd4;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.recipe-details-page__image {
+  position: relative;
+  min-height: 340px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 24px 24px 0 0;
+}
+
+.recipe-details-page__tag {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #18c14f;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.recipe-details-page__favorite {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #101828;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.recipe-details-page__favorite--active {
+  background: #101828;
+  color: #ffffff;
+}
+
+.recipe-details-page__content {
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+}
+
+.recipe-details-page__title-row {
+  display: grid;
+  gap: 18px;
+}
+
+.recipe-details-page__title-row h1,
+.recipe-details-page__steps h2 {
+  margin: 0;
+  color: #101828;
+}
+
+.recipe-details-page__title-row p {
+  margin: 12px 0 0;
+  color: #475467;
+  font-size: 1.08rem;
+  line-height: 1.6;
+}
+
+.recipe-details-page__owner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.recipe-details-page__owner-actions button {
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recipe-details-page__owner-actions button:first-child {
+  border: 1px solid #c7d7fe;
+  background: #eef4ff;
+  color: #1d4ed8;
+}
+
+.recipe-details-page__owner-actions button:last-child {
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.recipe-details-page__steps {
+  padding: 24px;
+}
+
+.recipe-details-page__sidebar-card {
+  padding: 24px;
+}
+
+.recipe-details-page__sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.recipe-details-page__sidebar-head h2 {
+  margin: 0;
+  color: #101828;
+}
+
+.recipe-details-page__sidebar-head span {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #1d4ed8;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.recipe-details-page__ingredients-list {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+}
+
+.recipe-details-page__ingredient-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #fcfcfd;
+}
+
+.recipe-details-page__ingredient-item strong {
+  color: #101828;
+}
+
+.recipe-details-page__ingredient-item p {
+  margin: 6px 0 0;
+  color: #475467;
+}
+
+
+
+
+
+.recipe-details-page__sidebar-empty {
+  margin: 18px 0 0;
+  color: #475467;
+}
+
+.recipe-details-page__steps ol {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0 0;
+  padding-left: 24px;
+  color: #475467;
+  line-height: 1.7;
+}
+
+.recipe-details-page__placeholder,
+.recipe-details-page__error {
+  padding: 22px;
+}
+
+.recipe-details-page__error p {
+  margin: 0 0 12px;
+  color: #be123c;
+}
+
+.recipe-details-page__error a {
+  color: #101828;
+  font-weight: 600;
+}
+
+@media (min-width: 1024px) {
+  .recipe-details-page__layout {
+    grid-template-columns: minmax(0, 1.8fr) minmax(320px, 0.86fr);
+    align-items: start;
+  }
+
+  .recipe-details-page__title-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+}
