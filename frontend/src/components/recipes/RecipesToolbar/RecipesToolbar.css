@@ -1,0 +1,42 @@
+.recipes-toolbar {
+  display: grid;
+  gap: 14px;
+}
+
+.recipes-toolbar p {
+  margin: 0;
+  color: #475467;
+  font-size: 1rem;
+}
+
+.recipes-toolbar strong {
+  color: #101828;
+}
+
+.recipes-toolbar__sort {
+  display: grid;
+  gap: 8px;
+}
+
+.recipes-toolbar__sort span {
+  color: #475467;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.recipes-toolbar__sort select {
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid #d8dde6;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #101828;
+  font: inherit;
+}
+
+@media (min-width: 1024px) {
+  .recipes-toolbar {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}

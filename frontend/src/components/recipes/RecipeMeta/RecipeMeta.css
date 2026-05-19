@@ -1,0 +1,39 @@
+.recipe-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.recipe-meta__item {
+  min-width: 110px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  display: grid;
+  gap: 4px;
+}
+
+.recipe-meta__label {
+  font-size: 0.84rem;
+  color: #475467;
+}
+
+.recipe-meta__item strong {
+  color: #101828;
+  font-size: 1rem;
+}
+
+.recipe-meta__item--blue {
+  background: #eaf2ff;
+}
+
+.recipe-meta__item--purple {
+  background: #f2eaff;
+}
+
+.recipe-meta__item--yellow {
+  background: #fff6d8;
+}
+
+.recipe-meta__item--green {
+  background: #e7f9ee;
+}
