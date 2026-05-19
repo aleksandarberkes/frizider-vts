@@ -23,9 +23,10 @@ if ($method === 'GET' && $id === null) {
     if ($isAdmin) {
         $stmt = $pdo->prepare(
             'SELECT c.id, c.user_id, c.recipe_id, c.content, c.is_approved, c.created_at,
-                    u.first_name, u.last_name
+                    u.first_name, u.last_name, r.rating
              FROM comments c
              JOIN users u ON u.id = c.user_id
+             LEFT JOIN ratings r ON r.user_id = c.user_id AND r.recipe_id = c.recipe_id
              WHERE c.recipe_id = :rid
              ORDER BY c.id'
         );
@@ -33,9 +34,10 @@ if ($method === 'GET' && $id === null) {
     } elseif ($caller) {
         $stmt = $pdo->prepare(
             'SELECT c.id, c.user_id, c.recipe_id, c.content, c.is_approved, c.created_at,
-                    u.first_name, u.last_name
+                    u.first_name, u.last_name, r.rating
              FROM comments c
              JOIN users u ON u.id = c.user_id
+             LEFT JOIN ratings r ON r.user_id = c.user_id AND r.recipe_id = c.recipe_id
              WHERE c.recipe_id = :rid
                AND (c.is_approved = 1 OR c.user_id = :uid)
              ORDER BY c.id'
@@ -44,9 +46,10 @@ if ($method === 'GET' && $id === null) {
     } else {
         $stmt = $pdo->prepare(
             'SELECT c.id, c.user_id, c.recipe_id, c.content, c.is_approved, c.created_at,
-                    u.first_name, u.last_name
+                    u.first_name, u.last_name, r.rating
              FROM comments c
              JOIN users u ON u.id = c.user_id
+             LEFT JOIN ratings r ON r.user_id = c.user_id AND r.recipe_id = c.recipe_id
              WHERE c.recipe_id = :rid
                AND c.is_approved = 1
              ORDER BY c.id'
