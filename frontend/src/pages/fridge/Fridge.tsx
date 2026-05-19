@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import FridgeTabs from '../components/auth/fridge-tabs/FridgeTabs';
+import FridgeTabs from '../../components/fridge-tabs/FridgeTabs';
 import './Fridge.css';
 
 function Fridge() {
