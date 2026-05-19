@@ -7,11 +7,12 @@ import RequireGuest from './components/auth/RequireGuest';
 import AdminDashboard from './pages/AdminDashboard';
 import AccountSettings from './pages/AccountSettings';
 import Favorites from './pages/Favorites';
-import Fridge from './pages/Fridge';
+import Fridge from './pages/fridge/Fridge';
 import FridgeFavorites from './pages/FridgeFavorites';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Recepti from './pages/Recepti';
+import RecipeDetails from './pages/recipe-details/RecipeDetails';
+import Recepti from './pages/recipes/Recepti';
 import Register from './pages/Register';
 import UserProfile from './pages/UserProfile';
 import WeeklyPlan from './pages/WeeklyPlan';
@@ -22,6 +23,7 @@ function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/recipes" element={<Recepti />} />
+        <Route path="/recipes/:id" element={<RecipeDetails />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route
           path="/fridge"

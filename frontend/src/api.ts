@@ -63,4 +63,10 @@ function put<T>(path: string, body?: unknown) {
   });
 }
 
-export const api = { get, post, put };
+function del<T>(path: string) {
+  return request<T>(path, {
+    method: 'DELETE',
+  });
+}
+
+export const api = { get, post, put, delete: del };
