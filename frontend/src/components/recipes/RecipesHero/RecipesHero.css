@@ -3,14 +3,14 @@
   gap: 18px;
 }
 
-.recipes-hero__content h1 {
+.recipes-hero-content h1 {
   margin: 0;
   color: #101828;
   font-size: clamp(2.1rem, 5vw, 3.2rem);
   line-height: 1;
 }
 
-.recipes-hero__eyebrow {
+.recipes-hero-eyebrow {
   margin: 0 0 10px;
   color: #16a34a;
   font-size: 0.82rem;
@@ -19,7 +19,7 @@
   text-transform: uppercase;
 }
 
-.recipes-hero__subtitle {
+.recipes-hero-subtitle {
   max-width: 760px;
   margin: 14px 0 0;
   color: #475467;
@@ -27,7 +27,7 @@
   line-height: 1.7;
 }
 
-.recipes-hero__button {
+.recipes-hero-button {
   min-height: 50px;
   padding: 0 22px;
   border: 0;

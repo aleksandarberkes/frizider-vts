@@ -1,33 +1,33 @@
-.recipe-form-modal__overlay {
+.recipe-form-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 40;
   display: grid;
   place-items: center;
   padding: 22px;
-  background: rgba(15, 23, 42, 0.56);
+  background-color: #0f172a8f;
   backdrop-filter: blur(8px);
 }
 
 .recipe-form-modal {
   width: min(960px, 100%);
-  max-height: calc(100vh - 44px);
+  max-height: calc(100vh - 170px);
   overflow: auto;
   padding: 26px;
   border-radius: 28px;
   background: #ffffff;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3);
+  
 }
 
-.recipe-form-modal__header,
-.recipe-form-modal__section-header,
-.recipe-form-modal__actions {
+.recipe-form-modal-header,
+.recipe-form-modal-section-header,
+.recipe-form-modal-actions {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.recipe-form-modal__header p {
+.recipe-form-modal-header p {
   margin: 0 0 6px;
   color: #16a34a;
   font-size: 0.82rem;
@@ -36,17 +36,17 @@
   text-transform: uppercase;
 }
 
-.recipe-form-modal__header h2,
-.recipe-form-modal__section h3 {
+.recipe-form-modal-header h2,
+.recipe-form-modal-section h3 {
   margin: 0;
   color: #101828;
 }
 
-.recipe-form-modal__header button,
-.recipe-form-modal__section-header button,
-.recipe-form-modal__ingredient-row button,
-.recipe-form-modal__ghost,
-.recipe-form-modal__submit {
+.recipe-form-modal-header button,
+.recipe-form-modal-section-header button,
+.recipe-form-modal-ingredient-row button,
+.recipe-form-modal-ghost,
+.recipe-form-modal-submit {
   min-height: 44px;
   padding: 0 16px;
   border-radius: 14px;
@@ -55,46 +55,46 @@
   cursor: pointer;
 }
 
-.recipe-form-modal__header button,
-.recipe-form-modal__section-header button,
-.recipe-form-modal__ghost {
+.recipe-form-modal-header button,
+.recipe-form-modal-section-header button,
+.recipe-form-modal-ghost {
   border: 1px solid #d8dde6;
   background: #ffffff;
 }
 
-.recipe-form-modal__submit {
+.recipe-form-modal-submit {
   border: 0;
   background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
   color: #ffffff;
 }
 
-.recipe-form-modal__form {
+.recipe-form-modal-form {
   display: grid;
   gap: 22px;
   margin-top: 24px;
 }
 
-.recipe-form-modal__grid {
+.recipe-form-modal-grid {
   display: grid;
   gap: 16px;
 }
 
-.recipe-form-modal__grid label,
-.recipe-form-modal__section {
+.recipe-form-modal-grid label,
+.recipe-form-modal-section {
   display: grid;
   gap: 10px;
 }
 
-.recipe-form-modal__grid span {
+.recipe-form-modal-grid span {
   color: #475467;
   font-size: 0.92rem;
   font-weight: 600;
 }
 
-.recipe-form-modal__grid input,
-.recipe-form-modal__grid textarea,
-.recipe-form-modal__ingredient-row input,
-.recipe-form-modal__ingredient-row select {
+.recipe-form-modal-grid input,
+.recipe-form-modal-grid textarea,
+.recipe-form-modal-ingredient-row input,
+.recipe-form-modal-ingredient-row select {
   width: 100%;
   border: 1px solid #d8dde6;
   border-radius: 16px;
@@ -103,26 +103,26 @@
   font: inherit;
 }
 
-.recipe-form-modal__grid input,
-.recipe-form-modal__ingredient-row input,
-.recipe-form-modal__ingredient-row select {
+.recipe-form-modal-grid input,
+.recipe-form-modal-ingredient-row input,
+.recipe-form-modal-ingredient-row select {
   min-height: 50px;
   padding: 0 16px;
 }
 
-.recipe-form-modal__grid textarea {
+.recipe-form-modal-grid textarea {
   min-height: 120px;
   padding: 14px 16px;
   resize: vertical;
 }
 
-.recipe-form-modal__chips {
+.recipe-form-modal-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.recipe-form-modal__chip {
+.recipe-form-modal-chip {
   min-height: 38px;
   padding: 0 14px;
   border: 1px solid #d8dde6;
@@ -133,29 +133,29 @@
   cursor: pointer;
 }
 
-.recipe-form-modal__chip--active {
+.recipe-form-modal-chip-active {
   border-color: #22c55e;
   background: #22c55e;
   color: #ffffff;
 }
 
-.recipe-form-modal__ingredients {
+.recipe-form-modal-ingredients {
   display: grid;
   gap: 12px;
 }
 
-.recipe-form-modal__ingredient-row {
+.recipe-form-modal-ingredient-row {
   display: grid;
   gap: 12px;
 }
 
-.recipe-form-modal__ingredient-row button {
+.recipe-form-modal-ingredient-row button {
   border: 1px solid #fecaca;
   background: #fff1f2;
   color: #be123c;
 }
 
-.recipe-form-modal__error {
+.recipe-form-modal-error {
   margin: 0;
   padding: 16px;
   border-radius: 16px;
@@ -164,23 +164,23 @@
 }
 
 @media (min-width: 1024px) {
-  .recipe-form-modal__header,
-  .recipe-form-modal__section-header,
-  .recipe-form-modal__actions {
+  .recipe-form-modal-header,
+  .recipe-form-modal-section-header,
+  .recipe-form-modal-actions {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
 
-  .recipe-form-modal__grid {
+  .recipe-form-modal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .recipe-form-modal__full {
+  .recipe-form-modal-full {
     grid-column: 1 / -1;
   }
 
-  .recipe-form-modal__ingredient-row {
+  .recipe-form-modal-ingredient-row {
     grid-template-columns: minmax(0, 1.3fr) 170px 120px;
   }
 }

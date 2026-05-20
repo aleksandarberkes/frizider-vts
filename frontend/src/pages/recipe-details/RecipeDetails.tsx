@@ -229,7 +229,13 @@ function RecipeDetails() {
 			description: recipe.description ?? "",
 			image_path: recipe.image_path ?? "",
 			estimated_price: recipe.estimated_price?.toString() ?? "",
-			categories: recipe.categories.map((category) => category.category_id),
+			categories: recipe.categories
+				.map((category) =>
+					typeof category.category_id === "number"
+						? category.category_id
+						: category.id,
+				)
+				.filter((categoryId): categoryId is number => typeof categoryId === "number"),
 			ingredients:
 				recipe.ingredients.length > 0
 					? recipe.ingredients.map((ingredient) => ({
@@ -363,7 +369,7 @@ function RecipeDetails() {
 	if (loading) {
 		return (
 			<section className="recipe-details-page">
-				<p className="recipe-details-page__placeholder">
+				<p className="recipe-details-page-placeholder">
 					Ucitavanje recepta...
 				</p>
 			</section>
@@ -373,7 +379,7 @@ function RecipeDetails() {
 	if (pageError || !recipe) {
 		return (
 			<section className="recipe-details-page">
-				<div className="recipe-details-page__error">
+				<div className="recipe-details-page-error">
 					<p>{pageError ?? "Recept nije pronadjen."}</p>
 					<Link to="/recipes">Nazad na recepte</Link>
 				</div>
@@ -385,30 +391,30 @@ function RecipeDetails() {
 
 	return (
 		<section className="recipe-details-page">
-			<Link className="recipe-details-page__back" to="/recipes">
+			<Link className="recipe-details-page-back" to="/recipes">
 				← Nazad na Recepte
 			</Link>
 
-			<div className="recipe-details-page__layout">
-				<div className="recipe-details-page__main">
-					<article className="recipe-details-page__hero-card">
+			<div className="recipe-details-page-layout">
+				<div className="recipe-details-page-main">
+					<article className="recipe-details-page-hero-card">
 						<div
-							className="recipe-details-page__image"
+							className="recipe-details-page-image"
 							style={
 								visual.imageUrl
 									? { backgroundImage: `url(${visual.imageUrl})` }
 									: { backgroundImage: visual.gradient }
 							}
 						>
-							<span className="recipe-details-page__tag">
+							<span className="recipe-details-page-tag">
 								{recipe.categories[0]?.name ?? "Recept"}
 							</span>
 							<button
 								type="button"
 								className={
 									isFavorite
-										? "recipe-details-page__favorite recipe-details-page__favorite--active"
-										: "recipe-details-page__favorite"
+										? "recipe-details-page-favorite recipe-details-page-favorite-active"
+										: "recipe-details-page-favorite"
 								}
 								onClick={toggleFavorite}
 								disabled={favoriteBusy}
@@ -417,14 +423,14 @@ function RecipeDetails() {
 							</button>
 						</div>
 
-						<div className="recipe-details-page__content">
-							<div className="recipe-details-page__title-row">
+						<div className="recipe-details-page-content">
+							<div className="recipe-details-page-title-row">
 								<div>
 									<h1>{recipe.name}</h1>
 									<p>{recipe.description ?? "Opis recepta nije dodat."}</p>
 								</div>
 								{isOwner ? (
-									<div className="recipe-details-page__owner-actions">
+									<div className="recipe-details-page-owner-actions">
 										<button type="button" onClick={openEditRecipeForm}>
 											Izmeni recept
 										</button>
@@ -468,21 +474,7 @@ function RecipeDetails() {
 						</div>
 					</article>
 
-					<section className="recipe-details-page__steps">
-						<h2>Koraci Pripreme</h2>
-						<ol>
-							<li>
-								Pripremite sve namirnice i odvojite potrebne kolicine za recept.
-							</li>
-							<li>
-								Sjedinite glavne sastojke i pratite preporuceni redosled
-								pripreme.
-							</li>
-							<li>
-								Po potrebi prilagodite zacine i servirajte jelo dok je toplo.
-							</li>
-						</ol>
-					</section>
+					
 
 					<RecipeCommentsSection
 						comments={comments}
@@ -498,17 +490,16 @@ function RecipeDetails() {
 					/>
 				</div>
 
-				<aside className="recipe-details-page__sidebar">
-					<section className="recipe-details-page__sidebar-card">
-						<div className="recipe-details-page__sidebar-head">
+				<aside className="recipe-details-page-sidebar">
+					<section className="recipe-details-page-sidebar-card">
+						<div className="recipe-details-page-sidebar-head">
 							<h2>Namirnice</h2>
 							<span>{recipe.ingredients.length}</span>
 						</div>
 
 						{recipe.ingredients.length > 0 ? (
-							<ul className="recipe-details-page__ingredients-list">
+							<ul className="recipe-details-page-ingredients-list">
 								{recipe.ingredients.map((ingredient) => {
-									
 									const quantity =
 										ingredient.quantity !== null
 											? `${ingredient.quantity} ${ingredient.unit}`.trim()
@@ -517,25 +508,27 @@ function RecipeDetails() {
 									return (
 										<li
 											key={ingredient.ingredient_id}
-											className="recipe-details-page__ingredient-item"
+											className="recipe-details-page-ingredient-item"
 										>
 											<div>
 												<strong>{ingredient.name}</strong>
 												<p>{quantity || "Kolicina nije uneta"}</p>
 											</div>
-											
+											{fridgeIngredientIds.has(ingredient.ingredient_id) ? (
+												<span className="recipe-details-page-ingredient-status">
+													U frizideru
+												</span>
+											) : null}
 										</li>
 									);
 								})}
 							</ul>
 						) : (
-							<p className="recipe-details-page__sidebar-empty">
+							<p className="recipe-details-page-sidebar-empty">
 								Nema dodatih namirnica za ovaj recept.
 							</p>
 						)}
 					</section>
-
-					
 				</aside>
 			</div>
 

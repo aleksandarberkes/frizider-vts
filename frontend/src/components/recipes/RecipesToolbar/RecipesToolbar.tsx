@@ -14,7 +14,7 @@ function RecipesToolbar({ count, sortBy, onSortByChange }: RecipesToolbarProps) 
         Pronadjeno <strong>{count}</strong> recepata
       </p>
 
-      <label className="recipes-toolbar__sort">
+      <label className="recipes-toolbar-sort">
         <span>Sortiranje</span>
         <select value={sortBy} onChange={(event) => onSortByChange(event.target.value as SortBy)}>
           <option value="popular">Najpopularnije</option>

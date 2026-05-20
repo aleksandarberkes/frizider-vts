@@ -60,6 +60,13 @@ function Recepti() {
 
   const favoriteSet = useMemo(() => new Set(favoriteIds), [favoriteIds]);
 
+  const normalizeText = (value: string) =>
+    value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
+
   const loadPageData = async () => {
     setLoading(true);
     setPageError(null);
@@ -114,11 +121,28 @@ function Recepti() {
         return false;
       }
 
-      if (
-        selectedCategoryId !== 'all' &&
-        !recipe.categories.some((category) => category.category_id === selectedCategoryId)
-      ) {
-        return false;
+      if (selectedCategoryId !== 'all') {
+        const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
+        const selectedCategoryName = selectedCategory ? normalizeText(selectedCategory.name) : '';
+
+        const hasSelectedCategory = recipe.categories.some((category) => {
+          const categoryId =
+            typeof category.category_id === 'number'
+              ? category.category_id
+              : typeof category.id === 'number'
+                ? category.id
+                : null;
+
+          if (categoryId === selectedCategoryId) {
+            return true;
+          }
+
+          return selectedCategoryName !== '' && normalizeText(category.name) === selectedCategoryName;
+        });
+
+        if (!hasSelectedCategory) {
+          return false;
+        }
       }
 
       if (favoritesOnly && !favoriteSet.has(recipe.id)) {
@@ -343,14 +367,14 @@ function Recepti() {
         onReset={resetFilters}
       />
 
-      {pageError ? <p className="recipes-page__error">{pageError}</p> : null}
+      {pageError ? <p className="recipes-page-error">{pageError}</p> : null}
 
       <RecipesToolbar count={filteredRecipes.length} sortBy={sortBy} onSortByChange={setSortBy} />
 
-      {loading ? <p className="recipes-page__placeholder">Ucitavanje recepata...</p> : null}
+      {loading ? <p className="recipes-page-placeholder">Ucitavanje recepata...</p> : null}
 
       {!loading && filteredRecipes.length === 0 ? (
-        <div className="recipes-page__empty">
+        <div className="recipes-page-empty">
           <h2>Nema rezultata za izabrane filtere</h2>
           <p>Promeni pretragu ili resetuj filtere da bi video vise recepata.</p>
         </div>

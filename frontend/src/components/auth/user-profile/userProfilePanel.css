@@ -13,7 +13,7 @@
   margin-bottom: 22px;
 }
 
-.profile-card-header--stack {
+.profile-card-header-stack {
   align-items: flex-start;
 }
 
@@ -92,12 +92,12 @@
   line-height: 1.35;
 }
 
-.profile-message--error {
+.profile-message-error {
   background: #fff1f1;
   color: #b42318;
 }
 
-.profile-message--success {
+.profile-message-success {
   background: #edfdf3;
   color: #027a48;
 }

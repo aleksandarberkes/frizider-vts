@@ -6,8 +6,8 @@
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
 }
 
-.recipes-filters__search input,
-.recipes-filters__field select {
+.recipes-filters-search input,
+.recipes-filters-field select {
   width: 100%;
   border: 1px solid #d8dde6;
   border-radius: 16px;
@@ -16,36 +16,36 @@
   font: inherit;
 }
 
-.recipes-filters__search input {
+.recipes-filters-search input {
   min-height: 56px;
   padding: 0 18px;
 }
 
-.recipes-filters__categories {
+.recipes-filters-categories {
   margin-top: 18px;
   display: grid;
   gap: 14px;
 }
 
-.recipes-filters__header {
+.recipes-filters-header {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.recipes-filters__header h2 {
+.recipes-filters-header h2 {
   margin: 0;
   color: #344054;
   font-size: 1rem;
 }
 
-.recipes-filters__chips {
+.recipes-filters-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.recipes-filters__chip {
+.recipes-filters-chip {
   min-height: 38px;
   padding: 0 14px;
   border: 1px solid #d8dde6;
@@ -57,35 +57,35 @@
   cursor: pointer;
 }
 
-.recipes-filters__chip--active {
+.recipes-filters-chip-active {
   border-color: #22c55e;
   background: #22c55e;
   color: #ffffff;
 }
 
-.recipes-filters__controls {
+.recipes-filters-controls {
   margin-top: 20px;
   display: grid;
   gap: 14px;
 }
 
-.recipes-filters__field {
+.recipes-filters-field {
   display: grid;
   gap: 8px;
 }
 
-.recipes-filters__field span {
+.recipes-filters-field span {
   color: #475467;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
-.recipes-filters__field select {
+.recipes-filters-field select {
   min-height: 48px;
   padding: 0 16px;
 }
 
-.recipes-filters__reset {
+.recipes-filters-reset {
   min-height: 48px;
   border: 1px solid #d8dde6;
   border-radius: 16px;
@@ -97,13 +97,13 @@
 }
 
 @media (min-width: 1024px) {
-  .recipes-filters__header {
+  .recipes-filters-header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
   }
 
-  .recipes-filters__controls {
+  .recipes-filters-controls {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: end;
   }

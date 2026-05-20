@@ -17,7 +17,8 @@ export type RecipeIngredient = {
 };
 
 export type RecipeCategory = {
-  category_id: number;
+  category_id?: number;
+  id?: number;
   name: string;
 };
 

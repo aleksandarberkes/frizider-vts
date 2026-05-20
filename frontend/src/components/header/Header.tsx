@@ -55,7 +55,7 @@ const Header = () => {
 	};
 
 	const mobileNavClass = isMenuOpen
-		? "mobile-navigation mobile-navigation--open"
+		? "mobile-navigation mobile-navigation-open"
 		: "mobile-navigation";
 
 	return (
@@ -128,7 +128,7 @@ const Header = () => {
 
 					<button
 						onClick={toggleMenu}
-						className={`mobile-menu-button ${isMenuOpen ? "mobile-menu-button--open" : ""}`}
+						className={`mobile-menu-button ${isMenuOpen ? "mobile-menu-button-open" : ""}`}
 						type="button"
 						aria-label={isMenuOpen ? "Close menu" : "Open menu"}
 						aria-expanded={isMenuOpen}
@@ -182,7 +182,7 @@ const Header = () => {
 
 						{user ? (
 							<>
-								<span className="navbar-user-badge navbar-user-badge--mobile">
+								<span className="navbar-user-badge navbar-user-badge-mobile">
 									Uloga: {user.role_name === "admin" ? "Admin" : "Korisnik"}
 								</span>
 								<button

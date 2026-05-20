@@ -12,25 +12,25 @@
   color: #101828;
 }
 
-.recipe-comments__composer {
+.recipe-comments-composer {
   margin-top: 18px;
   padding: 18px;
   border-radius: 20px;
   background: #f8f9fc;
 }
 
-.recipe-comments__composer p {
+.recipe-comments-composer p {
   margin: 14px 0 8px;
   color: #475467;
   font-weight: 600;
 }
 
-.recipe-comments__rating {
+.recipe-comments-rating {
   display: flex;
   gap: 6px;
 }
 
-.recipe-comments__star {
+.recipe-comments-star {
   border: 0;
   background: transparent;
   color: #d0d5dd;
@@ -38,17 +38,17 @@
   cursor: pointer;
 }
 
-.recipe-comments__star--active {
+.recipe-comments-star-active {
   color: #f4b400;
 }
 
-.recipe-comments__form {
+.recipe-comments-form {
   display: grid;
   gap: 12px;
   margin-top: 12px;
 }
 
-.recipe-comments__form textarea {
+.recipe-comments-form textarea {
   width: 100%;
   min-height: 92px;
   padding: 14px 16px;
@@ -60,8 +60,8 @@
   resize: vertical;
 }
 
-.recipe-comments__form button,
-.recipe-comments__login {
+.recipe-comments-form button,
+.recipe-comments-login {
   min-height: 48px;
   padding: 0 18px;
   border: 0;
@@ -74,13 +74,13 @@
   justify-self: start;
 }
 
-.recipe-comments__list {
+.recipe-comments-list {
   display: grid;
   gap: 16px;
   margin-top: 24px;
 }
 
-.recipe-comments__item {
+.recipe-comments-item {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 16px;
@@ -89,7 +89,7 @@
   border-radius: 18px;
 }
 
-.recipe-comments__avatar {
+.recipe-comments-avatar {
   width: 40px;
   height: 40px;
   border-radius: 999px;
@@ -100,43 +100,43 @@
   font-weight: 700;
 }
 
-.recipe-comments__head {
+.recipe-comments-head {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.recipe-comments__head strong {
+.recipe-comments-head strong {
   color: #101828;
   font-size: 1.05rem;
 }
 
-.recipe-comments__head span,
-.recipe-comments__body p {
+.recipe-comments-head span,
+.recipe-comments-body p {
   color: #475467;
 }
 
-.recipe-comments__stars {
+.recipe-comments-stars {
   margin-top: 6px;
   display: flex;
   gap: 2px;
 }
 
-.recipe-comments__comment-star {
+.recipe-comments-comment-star {
   color: #d0d5dd;
 }
 
-.recipe-comments__comment-star--active {
+.recipe-comments-comment-star-active {
   color: #f4b400;
 }
 
-.recipe-comments__body p {
+.recipe-comments-body p {
   margin: 10px 0 0;
   line-height: 1.6;
 }
 
 @media (min-width: 1024px) {
-  .recipe-comments__head {
+  .recipe-comments-head {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;

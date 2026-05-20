@@ -4,7 +4,7 @@
   gap: 10px;
 }
 
-.recipe-meta__item {
+.recipe-meta-item {
   min-width: 110px;
   padding: 12px 14px;
   border-radius: 16px;
@@ -12,28 +12,28 @@
   gap: 4px;
 }
 
-.recipe-meta__label {
+.recipe-meta-label {
   font-size: 0.84rem;
   color: #475467;
 }
 
-.recipe-meta__item strong {
+.recipe-meta-item strong {
   color: #101828;
   font-size: 1rem;
 }
 
-.recipe-meta__item--blue {
+.recipe-meta-item-blue {
   background: #eaf2ff;
 }
 
-.recipe-meta__item--purple {
+.recipe-meta-item-purple {
   background: #f2eaff;
 }
 
-.recipe-meta__item--yellow {
+.recipe-meta-item-yellow {
   background: #fff6d8;
 }
 
-.recipe-meta__item--green {
+.recipe-meta-item-green {
   background: #e7f9ee;
 }

@@ -33,14 +33,14 @@
   background: rgba(255, 255, 255, 0.7);
 }
 
-.fridge-tab--active {
+.fridge-tab-active {
   background: #ffffff;
   border-color: #d7d7db;
   color: #1a1a1a;
   box-shadow: 0 2px 8px rgba(17, 24, 39, 0.14);
 }
 
-.tabIcon {
+.tab-icon {
   width: 18px;
   height: 18px;
 }

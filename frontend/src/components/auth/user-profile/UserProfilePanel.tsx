@@ -65,8 +65,8 @@ function UserProfilePanel() {
   };
 
   return (
-    <section className="profile-card profile-card--wide">
-      <header className="profile-card-header profile-card-header--stack">
+    <section className="profile-card profile-card-wide">
+      <header className="profile-card-header profile-card-header-stack">
         <div>
           <h2>Podaci o Profilu</h2>
           <p className="profile-subtitle">Azurirajte svoje licne informacije</p>
@@ -120,9 +120,9 @@ function UserProfilePanel() {
           />
         </div>
 
-        {profileError ? <p className="profile-message profile-message--error">{profileError}</p> : null}
+        {profileError ? <p className="profile-message profile-message-error">{profileError}</p> : null}
         {profileSuccess ? (
-          <p className="profile-message profile-message--success">{profileSuccess}</p>
+          <p className="profile-message profile-message-success">{profileSuccess}</p>
         ) : null}
 
         <button type="submit" className="profile-button" disabled={savingProfile}>

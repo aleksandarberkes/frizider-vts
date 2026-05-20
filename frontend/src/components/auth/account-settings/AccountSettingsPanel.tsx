@@ -49,8 +49,8 @@ function AccountSettingsPanel() {
   };
 
   return (
-    <section className="profile-card profile-card--wide">
-      <header className="profile-card-header profile-card-header--stack">
+    <section className="profile-card profile-card-wide">
+      <header className="profile-card-header profile-card-header-stack">
         <div>
           <h2>Podesavanja Naloga</h2>
         </div>
@@ -96,10 +96,10 @@ function AccountSettingsPanel() {
         </div>
 
         {passwordError ? (
-          <p className="profile-message profile-message--error">{passwordError}</p>
+          <p className="profile-message profile-message-error">{passwordError}</p>
         ) : null}
         {passwordSuccess ? (
-          <p className="profile-message profile-message--success">{passwordSuccess}</p>
+          <p className="profile-message profile-message-success">{passwordSuccess}</p>
         ) : null}
 
         <button type="submit" className="profile-button" disabled={savingPassword}>

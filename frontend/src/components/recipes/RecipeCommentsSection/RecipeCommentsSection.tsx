@@ -34,19 +34,19 @@ function RecipeCommentsSection({
     <section className="recipe-comments">
       <h2>Komentari ({comments.length})</h2>
 
-      <div className="recipe-comments__composer">
+      <div className="recipe-comments-composer">
         <h3>Dodaj Komentar</h3>
         <p>Vasa Ocena</p>
 
-        <div className="recipe-comments__rating">
+        <div className="recipe-comments-rating">
           {ratingValues.map((value) => (
             <button
               key={value}
               type="button"
               className={
                 (currentUserRating ?? 0) >= value
-                  ? 'recipe-comments__star recipe-comments__star--active'
-                  : 'recipe-comments__star'
+                  ? 'recipe-comments-star recipe-comments-star-active'
+                  : 'recipe-comments-star'
               }
               onClick={() => (isLoggedIn ? onRateRecipe(value) : onPromptLogin())}
               disabled={ratingBusy}
@@ -57,7 +57,7 @@ function RecipeCommentsSection({
         </div>
 
         {isLoggedIn ? (
-          <form className="recipe-comments__form" onSubmit={onSubmitComment}>
+          <form className="recipe-comments-form" onSubmit={onSubmitComment}>
             <textarea
               value={commentDraft}
               onChange={(event) => onCommentDraftChange(event.target.value)}
@@ -70,16 +70,16 @@ function RecipeCommentsSection({
             </button>
           </form>
         ) : (
-          <button type="button" className="recipe-comments__login" onClick={onPromptLogin}>
+          <button type="button" className="recipe-comments-login" onClick={onPromptLogin}>
             Uloguj se za komentarisanje
           </button>
         )}
       </div>
 
-      <div className="recipe-comments__list">
+      <div className="recipe-comments-list">
         {comments.map((comment) => (
-          <article key={comment.id} className="recipe-comments__item">
-            <div className="recipe-comments__avatar">
+          <article key={comment.id} className="recipe-comments-item">
+            <div className="recipe-comments-avatar">
               {getCommentAuthor(comment)
                 .split(' ')
                 .map((part) => part[0])
@@ -87,19 +87,19 @@ function RecipeCommentsSection({
                 .slice(0, 2)
                 .toUpperCase()}
             </div>
-            <div className="recipe-comments__body">
-              <div className="recipe-comments__head">
+            <div className="recipe-comments-body">
+              <div className="recipe-comments-head">
                 <strong>{getCommentAuthor(comment)}</strong>
                 <span>{formatDate(comment.created_at)}</span>
               </div>
-              <div className="recipe-comments__stars" aria-label={`Ocena: ${comment.rating ?? 0} od 5`}>
+              <div className="recipe-comments-stars" aria-label={`Ocena: ${comment.rating ?? 0} od 5`}>
                 {ratingValues.map((value) => (
                   <span
                     key={value}
                     className={
                       (comment.rating ?? 0) >= value
-                        ? 'recipe-comments__comment-star recipe-comments__comment-star--active'
-                        : 'recipe-comments__comment-star'
+                        ? 'recipe-comments-comment-star recipe-comments-comment-star-active'
+                        : 'recipe-comments-comment-star'
                     }
                   >
                     ★

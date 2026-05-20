@@ -19,27 +19,27 @@ function RecipeCard({ recipe, aggregate, isFavorite, favoriteBusy, onToggleFavor
   return (
     <article className="recipe-card">
       <div
-        className="recipe-card__image"
+        className="recipe-card-image"
         style={
           visual.imageUrl
             ? { backgroundImage: `url(${visual.imageUrl})` }
             : { backgroundImage: visual.gradient }
         }
       >
-        <span className="recipe-card__tag">{category}</span>
+        <span className="recipe-card-tag">{category}</span>
         <button
           type="button"
-          className={isFavorite ? 'recipe-card__favorite recipe-card__favorite--active' : 'recipe-card__favorite'}
+          className={isFavorite ? 'recipe-card-favorite recipe-card-favorite-active' : 'recipe-card-favorite'}
           onClick={() => onToggleFavorite(recipe.id)}
           disabled={favoriteBusy}
           aria-label="Sacuvaj recept"
         >
-          <img src="/icons/fav-icon.svg" alt="Add to favorites icon" className={isFavorite ? 'add-to-favorite-icon add-to-favorite-icon--active' : 'add-to-favorite-icon'} />
+          <img src="/icons/fav-icon.svg" alt="Add to favorites icon" className={isFavorite ? 'add-to-favorite-icon add-to-favorite-icon-active' : 'add-to-favorite-icon'} />
         </button>
       </div>
 
-      <div className="recipe-card__body">
-        <div className="recipe-card__copy">
+      <div className="recipe-card-body">
+        <div className="recipe-card-copy">
           <h2>{recipe.name}</h2>
           <p>{recipe.description ?? 'Opis recepta nije dodat.'}</p>
         </div>
@@ -56,9 +56,9 @@ function RecipeCard({ recipe, aggregate, isFavorite, favoriteBusy, onToggleFavor
           ]}
         />
 
-        <div className="recipe-card__footer">
-          <strong className="recipe-card__price">{formatPrice(recipe.estimated_price)}</strong>
-          <Link className="recipe-card__link" to={`/recipes/${recipe.id}`}>
+        <div className="recipe-card-footer">
+          <strong className="recipe-card-price">{formatPrice(recipe.estimated_price)}</strong>
+          <Link className="recipe-card-link" to={`/recipes/${recipe.id}`}>
             Vidi recept
           </Link>
         </div>

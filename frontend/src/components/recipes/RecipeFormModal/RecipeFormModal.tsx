@@ -44,7 +44,7 @@ function RecipeFormModal({
   }
 
   return (
-    <div className="recipe-form-modal__overlay" onClick={onClose} role="presentation">
+    <div className="recipe-form-modal-overlay" onClick={onClose} role="presentation">
       <div
         className="recipe-form-modal"
         role="dialog"
@@ -52,7 +52,7 @@ function RecipeFormModal({
         aria-labelledby="recipe-form-title"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="recipe-form-modal__header">
+        <div className="recipe-form-modal-header">
           <div>
             <p>{editingRecipeId ? 'Izmena recepta' : 'Novi recept'}</p>
             <h2 id="recipe-form-title">
@@ -65,8 +65,8 @@ function RecipeFormModal({
           </button>
         </div>
 
-        <form className="recipe-form-modal__form" onSubmit={onSubmit}>
-          <div className="recipe-form-modal__grid">
+        <form className="recipe-form-modal-form" onSubmit={onSubmit}>
+          <div className="recipe-form-modal-grid">
             <label>
               <span>Naziv recepta</span>
               <input
@@ -88,7 +88,7 @@ function RecipeFormModal({
               />
             </label>
 
-            <label className="recipe-form-modal__full">
+            <label className="recipe-form-modal-full">
               <span>Slika recepta</span>
               <input
                 type="text"
@@ -98,7 +98,7 @@ function RecipeFormModal({
               />
             </label>
 
-            <label className="recipe-form-modal__full">
+            <label className="recipe-form-modal-full">
               <span>Opis</span>
               <textarea
                 rows={4}
@@ -108,17 +108,17 @@ function RecipeFormModal({
             </label>
           </div>
 
-          <div className="recipe-form-modal__section">
+          <div className="recipe-form-modal-section">
             <h3>Kategorije</h3>
-            <div className="recipe-form-modal__chips">
+            <div className="recipe-form-modal-chips">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   type="button"
                   className={
                     recipeForm.categories.includes(category.id)
-                      ? 'recipe-form-modal__chip recipe-form-modal__chip--active'
-                      : 'recipe-form-modal__chip'
+                      ? 'recipe-form-modal-chip recipe-form-modal-chip-active'
+                      : 'recipe-form-modal-chip'
                   }
                   onClick={() => onToggleCategory(category.id)}
                 >
@@ -128,17 +128,17 @@ function RecipeFormModal({
             </div>
           </div>
 
-          <div className="recipe-form-modal__section">
-            <div className="recipe-form-modal__section-header">
+          <div className="recipe-form-modal-section">
+            <div className="recipe-form-modal-section-header">
               <h3>Namirnice</h3>
               <button type="button" onClick={onAddIngredientRow}>
                 Dodaj namirnicu
               </button>
             </div>
 
-            <div className="recipe-form-modal__ingredients">
+            <div className="recipe-form-modal-ingredients">
               {recipeForm.ingredients.map((row, index) => (
-                <div key={`ingredient-row-${index}`} className="recipe-form-modal__ingredient-row">
+                <div key={`ingredient-row-${index}`} className="recipe-form-modal-ingredient-row">
                   <select
                     value={row.ingredient_id}
                     onChange={(event) =>
@@ -170,13 +170,13 @@ function RecipeFormModal({
             </div>
           </div>
 
-          {recipeFormError ? <p className="recipe-form-modal__error">{recipeFormError}</p> : null}
+          {recipeFormError ? <p className="recipe-form-modal-error">{recipeFormError}</p> : null}
 
-          <div className="recipe-form-modal__actions">
-            <button type="button" className="recipe-form-modal__ghost" onClick={onClose}>
+          <div className="recipe-form-modal-actions">
+            <button type="button" className="recipe-form-modal-ghost" onClick={onClose}>
               Odustani
             </button>
-            <button type="submit" className="recipe-form-modal__submit" disabled={recipeFormSaving}>
+            <button type="submit" className="recipe-form-modal-submit" disabled={recipeFormSaving}>
               {recipeFormSaving ? 'Cuvanje...' : editingRecipeId ? 'Sacuvaj izmene' : 'Objavi recept'}
             </button>
           </div>

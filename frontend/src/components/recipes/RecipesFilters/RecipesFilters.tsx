@@ -34,7 +34,7 @@ function RecipesFilters({
 }: RecipesFiltersProps) {
   return (
     <section className="recipes-filters">
-      <label className="recipes-filters__search">
+      <label className="recipes-filters-search">
         <input
           type="search"
           value={searchTerm}
@@ -43,16 +43,16 @@ function RecipesFilters({
         />
       </label>
 
-      <div className="recipes-filters__categories">
-        <div className="recipes-filters__header">
+      <div className="recipes-filters-categories">
+        <div className="recipes-filters-header">
           <h2>Kategorije</h2>
           {canFilterFavorites ? (
             <button
               type="button"
               className={
                 favoritesOnly
-                  ? 'recipes-filters__chip recipes-filters__chip--active'
-                  : 'recipes-filters__chip'
+                  ? 'recipes-filters-chip recipes-filters-chip-active'
+                  : 'recipes-filters-chip'
               }
               onClick={onFavoritesOnlyChange}
             >
@@ -61,13 +61,13 @@ function RecipesFilters({
           ) : null}
         </div>
 
-        <div className="recipes-filters__chips">
+        <div className="recipes-filters-chips">
           <button
             type="button"
             className={
               selectedCategoryId === 'all'
-                ? 'recipes-filters__chip recipes-filters__chip--active'
-                : 'recipes-filters__chip'
+                ? 'recipes-filters-chip recipes-filters-chip-active'
+                : 'recipes-filters-chip'
             }
             onClick={() => onSelectedCategoryChange('all')}
           >
@@ -79,8 +79,8 @@ function RecipesFilters({
               type="button"
               className={
                 selectedCategoryId === category.id
-                  ? 'recipes-filters__chip recipes-filters__chip--active'
-                  : 'recipes-filters__chip'
+                  ? 'recipes-filters-chip recipes-filters-chip-active'
+                  : 'recipes-filters-chip'
               }
               onClick={() => onSelectedCategoryChange(category.id)}
             >
@@ -90,8 +90,8 @@ function RecipesFilters({
         </div>
       </div>
 
-      <div className="recipes-filters__controls">
-        <label className="recipes-filters__field">
+      <div className="recipes-filters-controls">
+        <label className="recipes-filters-field">
           <span>Cena</span>
           <select
             value={priceFilter}
@@ -104,7 +104,7 @@ function RecipesFilters({
           </select>
         </label>
 
-        <label className="recipes-filters__field">
+        <label className="recipes-filters-field">
           <span>Ocena</span>
           <select
             value={ratingFilter}
@@ -116,7 +116,7 @@ function RecipesFilters({
           </select>
         </label>
 
-        <button type="button" className="recipes-filters__reset" onClick={onReset}>
+        <button type="button" className="recipes-filters-reset" onClick={onReset}>
           Resetuj filtere
         </button>
       </div>

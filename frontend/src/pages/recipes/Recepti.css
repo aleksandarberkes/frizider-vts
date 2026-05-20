@@ -3,9 +3,9 @@
   gap: 24px;
 }
 
-.recipes-page__error,
-.recipes-page__placeholder,
-.recipes-page__empty {
+.recipes-page-error,
+.recipes-page-placeholder,
+.recipes-page-empty {
   padding: 20px 22px;
   border-radius: 20px;
   border: 1px solid #e9ddd4;
@@ -13,21 +13,21 @@
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
 }
 
-.recipes-page__error {
+.recipes-page-error {
   background: #fff1f2;
   color: #be123c;
 }
 
-.recipes-page__empty {
+.recipes-page-empty {
   text-align: center;
 }
 
-.recipes-page__empty h2 {
+.recipes-page-empty h2 {
   margin: 0;
   color: #101828;
 }
 
-.recipes-page__empty p {
+.recipes-page-empty p {
   margin: 12px 0 0;
   color: #475467;
 }
