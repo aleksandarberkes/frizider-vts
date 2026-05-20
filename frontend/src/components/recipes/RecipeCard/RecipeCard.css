@@ -57,13 +57,13 @@
   padding: 26px;
 }
 
-.recipe-card-copy h2 {
+.recipe-card-header h2 {
   margin: 0;
   color: #101828;
-  font-size: clamp(1.7rem, 3vw, 2.25rem);
+  
 }
 
-.recipe-card-copy p {
+.recipe-card-header p {
   margin: 14px 0 0;
   color: #475467;
   font-size: 1.05rem;

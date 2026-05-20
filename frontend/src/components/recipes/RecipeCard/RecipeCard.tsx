@@ -39,7 +39,7 @@ function RecipeCard({ recipe, aggregate, isFavorite, favoriteBusy, onToggleFavor
       </div>
 
       <div className="recipe-card-body">
-        <div className="recipe-card-copy">
+        <div className="recipe-card-header">
           <h2>{recipe.name}</h2>
           <p>{recipe.description ?? 'Opis recepta nije dodat.'}</p>
         </div>
