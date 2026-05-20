@@ -1,4 +1,7 @@
+import { API_BASE_URL } from '../../api';
 import { Recipe, RecipeComment, RecipeFormState } from './types';
+
+const backendOrigin = new URL(API_BASE_URL).origin;
 
 export const emptyRecipeForm = (): RecipeFormState => ({
   name: '',
@@ -42,6 +45,17 @@ export const getRecipeVisual = (recipe: Recipe) => {
   if (recipe.image_path && /^https?:\/\//i.test(recipe.image_path)) {
     return {
       imageUrl: recipe.image_path,
+      gradient: '',
+    };
+  }
+
+  if (
+    recipe.image_path &&
+    (recipe.image_path.startsWith('/frizider-vts/backend/uploads/') ||
+      recipe.image_path.startsWith('/backend/uploads/'))
+  ) {
+    return {
+      imageUrl: `${backendOrigin}${recipe.image_path}`,
       gradient: '',
     };
   }
