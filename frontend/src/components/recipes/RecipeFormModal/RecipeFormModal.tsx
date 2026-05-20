@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import { ChangeEvent, DragEvent, FormEvent, useRef } from 'react';
 import { Category, IngredientOption, RecipeFormState } from '../types';
 import './RecipeFormModal.css';
 
@@ -10,9 +10,12 @@ type RecipeFormModalProps = {
   ingredientsCatalog: IngredientOption[];
   recipeFormError: string | null;
   recipeFormSaving: boolean;
+  imagePreviewUrl: string;
+  hasSelectedImage: boolean;
   onClose: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onFieldChange: (field: keyof RecipeFormState, value: string | number[]) => void;
+  onImageFileChange: (file: File | null) => void;
   onIngredientRowChange: (
     index: number,
     field: 'ingredient_id' | 'quantity',
@@ -31,17 +34,38 @@ function RecipeFormModal({
   ingredientsCatalog,
   recipeFormError,
   recipeFormSaving,
+  imagePreviewUrl,
+  hasSelectedImage,
   onClose,
   onSubmit,
   onFieldChange,
+  onImageFileChange,
   onIngredientRowChange,
   onAddIngredientRow,
   onRemoveIngredientRow,
   onToggleCategory,
 }: RecipeFormModalProps) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   if (!isOpen) {
     return null;
   }
+
+  const handleDrop = (event: DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0] ?? null;
+    onImageFileChange(file);
+  };
+
+  const handleDragOver = (event: DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+  };
+
+  const handleFileInput = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    onImageFileChange(file);
+    event.target.value = '';
+  };
 
   return (
     <div className="recipe-form-modal-overlay" onClick={onClose} role="presentation">
@@ -90,11 +114,48 @@ function RecipeFormModal({
 
             <label className="recipe-form-modal-full">
               <span>Slika recepta</span>
+              <label
+                className="recipe-form-modal-dropzone"
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  onChange={handleFileInput}
+                  hidden
+                />
+
+                {imagePreviewUrl ? (
+                  <img className="recipe-form-modal-preview" src={imagePreviewUrl} alt="Pregled recepta" />
+                ) : (
+                  <div className="recipe-form-modal-dropzone-copy">
+                    <strong>Prevuci sliku ovde</strong>
+                    <p>Ili klikni da izaberes fajl sa racunara</p>
+                  </div>
+                )}
+
+                <div className="recipe-form-modal-dropzone-actions">
+                  <button type="button" onClick={() => fileInputRef.current?.click()}>
+                    Izaberi sliku
+                  </button>
+                  {hasSelectedImage ? (
+                    <button type="button" onClick={() => onImageFileChange(null)}>
+                      Ukloni sliku
+                    </button>
+                  ) : null}
+                </div>
+              </label>
+            </label>
+
+            <label className="recipe-form-modal-full">
+              <span>Ili unesi URL slike</span>
               <input
                 type="text"
                 value={recipeForm.image_path}
                 onChange={(event) => onFieldChange('image_path', event.target.value)}
-                placeholder="Unesi URL ili naziv fajla"
+                placeholder="https://... ili ostavi prazno ako uploadujes fajl"
               />
             </label>
 

@@ -15,7 +15,7 @@ function buildRequest(path: string, init: RequestInit = {}) {
     ...init,
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
+      ...(init.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
       ...(init.headers ?? {}),
     },
   });
@@ -69,4 +69,11 @@ function del<T>(path: string) {
   });
 }
 
-export const api = { get, post, put, delete: del };
+function upload<T>(path: string, body: FormData) {
+  return request<T>(path, {
+    method: 'POST',
+    body,
+  });
+}
+
+export const api = { get, post, put, delete: del, upload };

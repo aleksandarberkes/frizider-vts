@@ -47,6 +47,8 @@ function Recepti() {
   const [recipeFormError, setRecipeFormError] = useState<string | null>(null);
   const [recipeFormSaving, setRecipeFormSaving] = useState(false);
   const [favoriteBusyId, setFavoriteBusyId] = useState<number | null>(null);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState('');
 
   const mapError = (err: unknown, fallback: string) => {
     if (err instanceof TypeError) {
@@ -111,6 +113,20 @@ function Recepti() {
     loadPageData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!selectedImageFile) {
+      setImagePreviewUrl(recipeForm.image_path.trim());
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(selectedImageFile);
+    setImagePreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [selectedImageFile, recipeForm.image_path]);
 
   const filteredRecipes = recipes
     .filter((recipe) => {
@@ -242,6 +258,8 @@ function Recepti() {
 
     setEditingRecipeId(null);
     setRecipeForm(emptyRecipeForm());
+    setSelectedImageFile(null);
+    setImagePreviewUrl('');
     setRecipeFormError(null);
     setShowRecipeForm(true);
   };
@@ -249,14 +267,38 @@ function Recepti() {
   const closeRecipeForm = () => {
     setShowRecipeForm(false);
     setEditingRecipeId(null);
+    setSelectedImageFile(null);
+    setImagePreviewUrl('');
     setRecipeFormError(null);
   };
 
   const updateRecipeFormField = (field: keyof RecipeFormState, value: string | number[]) => {
+    if (field === 'image_path' && selectedImageFile) {
+      setSelectedImageFile(null);
+    }
     setRecipeForm((current) => ({
       ...current,
       [field]: value,
     }));
+  };
+
+  const updateRecipeImageFile = (file: File | null) => {
+    if (!file) {
+      setSelectedImageFile(null);
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setRecipeFormError('Mozes da dodas samo sliku za recept.');
+      return;
+    }
+
+    setRecipeFormError(null);
+    setRecipeForm((current) => ({
+      ...current,
+      image_path: '',
+    }));
+    setSelectedImageFile(file);
   };
 
   const handleIngredientRowChange = (
@@ -322,10 +364,18 @@ function Recepti() {
     setRecipeFormError(null);
 
     try {
+      let imagePath = recipeForm.image_path.trim();
+      if (selectedImageFile) {
+        const formData = new FormData();
+        formData.append('image', selectedImageFile);
+        const uploadResponse = await api.upload<{ path: string }>('/api/uploads', formData);
+        imagePath = uploadResponse.path;
+      }
+
       const payload = {
         name: recipeForm.name.trim(),
         description: recipeForm.description.trim(),
-        image_path: recipeForm.image_path.trim(),
+        image_path: imagePath,
         estimated_price:
           recipeForm.estimated_price.trim() === '' ? null : Number(recipeForm.estimated_price),
         ingredients: cleanedIngredients,
@@ -398,9 +448,12 @@ function Recepti() {
         ingredientsCatalog={ingredientsCatalog}
         recipeFormError={recipeFormError}
         recipeFormSaving={recipeFormSaving}
+        imagePreviewUrl={imagePreviewUrl}
+        hasSelectedImage={!!selectedImageFile || recipeForm.image_path.trim() !== ''}
         onClose={closeRecipeForm}
         onSubmit={submitRecipeForm}
         onFieldChange={updateRecipeFormField}
+        onImageFileChange={updateRecipeImageFile}
         onIngredientRowChange={handleIngredientRowChange}
         onAddIngredientRow={addIngredientRow}
         onRemoveIngredientRow={removeIngredientRow}

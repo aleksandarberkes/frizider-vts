@@ -56,11 +56,12 @@ function RecipeDetails() {
 	const [commentSaving, setCommentSaving] = useState(false);
 
 	const [showRecipeForm, setShowRecipeForm] = useState(false);
-	const [recipeForm, setRecipeForm] =
-		useState<RecipeFormState>(emptyRecipeForm);
+	const [recipeForm, setRecipeForm] = useState<RecipeFormState>(emptyRecipeForm);
 	const [recipeFormError, setRecipeFormError] = useState<string | null>(null);
 	const [recipeFormSaving, setRecipeFormSaving] = useState(false);
 	const [recipeDeleteBusy, setRecipeDeleteBusy] = useState(false);
+	const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+	const [imagePreviewUrl, setImagePreviewUrl] = useState("");
 
 	const mapError = (err: unknown, fallback: string) => {
 		if (err instanceof TypeError) {
@@ -135,6 +136,20 @@ function RecipeDetails() {
 		loadDetail();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [recipeId, user?.id]);
+
+	useEffect(() => {
+		if (!selectedImageFile) {
+			setImagePreviewUrl(recipeForm.image_path.trim());
+			return;
+		}
+
+		const objectUrl = URL.createObjectURL(selectedImageFile);
+		setImagePreviewUrl(objectUrl);
+
+		return () => {
+			URL.revokeObjectURL(objectUrl);
+		};
+	}, [selectedImageFile, recipeForm.image_path]);
 
 	const isFavorite = useMemo(
 		() => favoriteIds.includes(recipeId),
@@ -244,12 +259,16 @@ function RecipeDetails() {
 						}))
 					: [{ ingredient_id: "", quantity: "" }],
 		});
+		setSelectedImageFile(null);
+		setImagePreviewUrl(recipe.image_path ?? "");
 		setRecipeFormError(null);
 		setShowRecipeForm(true);
 	};
 
 	const closeRecipeForm = () => {
 		setShowRecipeForm(false);
+		setSelectedImageFile(null);
+		setImagePreviewUrl("");
 		setRecipeFormError(null);
 	};
 
@@ -257,10 +276,32 @@ function RecipeDetails() {
 		field: keyof RecipeFormState,
 		value: string | number[],
 	) => {
+		if (field === "image_path" && selectedImageFile) {
+			setSelectedImageFile(null);
+		}
 		setRecipeForm((current) => ({
 			...current,
 			[field]: value,
 		}));
+	};
+
+	const updateRecipeImageFile = (file: File | null) => {
+		if (!file) {
+			setSelectedImageFile(null);
+			return;
+		}
+
+		if (!file.type.startsWith("image/")) {
+			setRecipeFormError("Mozes da dodas samo sliku za recept.");
+			return;
+		}
+
+		setRecipeFormError(null);
+		setRecipeForm((current) => ({
+			...current,
+			image_path: "",
+		}));
+		setSelectedImageFile(file);
 	};
 
 	const handleIngredientRowChange = (
@@ -327,10 +368,21 @@ function RecipeDetails() {
 		setRecipeFormError(null);
 
 		try {
+			let imagePath = recipeForm.image_path.trim();
+			if (selectedImageFile) {
+				const formData = new FormData();
+				formData.append("image", selectedImageFile);
+				const uploadResponse = await api.upload<{ path: string }>(
+					"/api/uploads",
+					formData,
+				);
+				imagePath = uploadResponse.path;
+			}
+
 			await api.put<Recipe>(`/api/recipes/${recipeId}`, {
 				name: recipeForm.name.trim(),
 				description: recipeForm.description.trim(),
-				image_path: recipeForm.image_path.trim(),
+				image_path: imagePath,
 				estimated_price:
 					recipeForm.estimated_price.trim() === ""
 						? null
@@ -542,9 +594,12 @@ function RecipeDetails() {
 				ingredientsCatalog={ingredientsCatalog}
 				recipeFormError={recipeFormError}
 				recipeFormSaving={recipeFormSaving}
+				imagePreviewUrl={imagePreviewUrl}
+				hasSelectedImage={!!selectedImageFile || recipeForm.image_path.trim() !== ""}
 				onClose={closeRecipeForm}
 				onSubmit={submitRecipeForm}
 				onFieldChange={updateRecipeFormField}
+				onImageFileChange={updateRecipeImageFile}
 				onIngredientRowChange={handleIngredientRowChange}
 				onAddIngredientRow={addIngredientRow}
 				onRemoveIngredientRow={removeIngredientRow}
