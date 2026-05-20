@@ -47,7 +47,12 @@ function RecipeCard({ recipe, aggregate, isFavorite, favoriteBusy, onToggleFavor
         <RecipeMeta
           items={[
             { label: 'Namirnice', value: `${recipe.ingredients.length}`, tone: 'blue' },
-            { label: 'Kategorije', value: `${recipe.categories.length}`, tone: 'purple' },
+            {
+              label: 'Kategorija',
+              value: `${recipe.categories.length}`,
+              category,
+              tone: 'category',
+            },
             {
               label: 'Ocena',
               value: aggregate?.average ? `${aggregate.average.toFixed(1)}` : 'Nema',

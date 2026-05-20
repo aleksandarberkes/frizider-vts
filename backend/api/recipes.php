@@ -137,14 +137,19 @@ function validateCategoryList(PDO $pdo, $raw): array
         respondError(422, 'categories must be an array of ids');
     }
     $cleaned = [];
+    $seen = [];
     foreach ($raw as $cid) {
         $cid = (int)$cid;
+        if (isset($seen[$cid])) {
+            continue;
+        }
         $check = $pdo->prepare('SELECT 1 FROM categories WHERE id = :id');
         $check->execute([':id' => $cid]);
         if (!$check->fetchColumn()) {
             respondError(422, "category_id {$cid} does not exist");
         }
         $cleaned[] = $cid;
+        $seen[$cid] = true;
     }
     return $cleaned;
 }

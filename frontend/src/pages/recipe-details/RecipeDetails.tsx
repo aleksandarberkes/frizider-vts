@@ -388,6 +388,7 @@ function RecipeDetails() {
 	}
 
 	const visual = getRecipeVisual(recipe);
+	const category = recipe.categories[0]?.name ?? "Recept";
 
 	return (
 		<section className="recipe-details-page">
@@ -453,9 +454,10 @@ function RecipeDetails() {
 										tone: "blue",
 									},
 									{
-										label: "Kategorije",
+										label: "Kategorija",
 										value: `${recipe.categories.length}`,
-										tone: "purple",
+										category,
+										tone: "category",
 									},
 									{
 										label: "Ocena",
