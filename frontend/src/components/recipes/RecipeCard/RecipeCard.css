@@ -1,48 +1,48 @@
 .recipe-card {
   overflow: hidden;
   border: 1px solid #e9ddd4;
-  border-radius: 28px;
+  border-radius: 22px;
   background-color: #ffffff;
-  max-width: 500px;
+  max-width: 380px;
   margin: 0 auto;
 }
 
 .recipe-card-image {
   position: relative;
-  min-height: 320px;
+  min-height: 220px;
   background-size: cover;
   background-position: center;
 }
 
 .recipe-card-tag {
   position: absolute;
-  top: 18px;
-  left: 18px;
-  padding: 10px 16px;
+  top: 14px;
+  left: 14px;
+  padding: 8px 12px;
   border-radius: 999px;
   background: #18c14f;
   color: #ffffff;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
 .recipe-card-favorite {
   position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 58px;
-  height: 58px;
+  top: 14px;
+  right: 14px;
+  width: 46px;
+  height: 46px;
   border: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.96);
   color: #111827;
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
 }
 .add-to-favorite-icon{
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 .recipe-card-favorite-active {
   background: #111827;
@@ -53,46 +53,47 @@
 }
 .recipe-card-body {
   display: grid;
-  gap: 22px;
-  padding: 26px;
+  gap: 16px;
+  padding: 18px;
 }
 
 .recipe-card-header h2 {
   margin: 0;
   color: #101828;
-  
+  font-size: 1.2rem;
 }
 
 .recipe-card-header p {
-  margin: 14px 0 0;
+  margin: 10px 0 0;
   color: #475467;
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.45;
 }
 
 .recipe-card-footer {
-  padding-top: 18px;
+  padding-top: 14px;
   border-top: 1px solid #e9eaef;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .recipe-card-price {
   color: #16a34a;
-  font-size: 1.7rem;
+  font-size: 1.3rem;
 }
 
 .recipe-card-link {
-  min-height: 52px;
-  padding: 0 22px;
-  border-radius: 16px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 14px;
   background: #0db14b;
   color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
+  font-size: 0.95rem;
   text-decoration: none;
 }
 

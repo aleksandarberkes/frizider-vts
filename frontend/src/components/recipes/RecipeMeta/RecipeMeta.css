@@ -1,15 +1,23 @@
 .recipe-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+  min-width: 0;
 }
 
 .recipe-meta-item {
-  min-width: 110px;
+  min-width: 0;
+  flex: 0 0 calc((100% - 8px) / 2);
+  max-width: calc((100% - 8px) / 2);
   padding: 12px 14px;
   border-radius: 16px;
   display: grid;
   gap: 4px;
+}
+
+.recipe-meta-item strong,
+.recipe-meta-label {
+  overflow-wrap: anywhere;
 }
 
 .recipe-meta-label {
@@ -40,4 +48,11 @@
 
 .recipe-meta-item-green {
   background: #e7f9ee;
+}
+
+@media (min-width: 1024px) {
+  .recipe-meta-item {
+    flex-basis: calc((100% - 16px) / 3);
+    max-width: calc((100% - 16px) / 3);
+  }
 }

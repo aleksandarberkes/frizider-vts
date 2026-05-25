@@ -1,6 +1,7 @@
 .recipe-details-page {
   display: grid;
   gap: 22px;
+  min-width: 0;
 }
 
 .recipe-details-page-back {
@@ -12,17 +13,20 @@
 .recipe-details-page-layout {
   display: grid;
   gap: 24px;
+  min-width: 0;
 }
 
 .recipe-details-page-main {
   display: grid;
   gap: 24px;
+  min-width: 0;
 }
 
 .recipe-details-page-sidebar {
   display: grid;
   gap: 24px;
   align-content: start;
+  min-width: 0;
 }
 
 .recipe-details-page-hero-card,
@@ -89,6 +93,7 @@
 .recipe-details-page-title-row h1 {
   margin: 0;
   color: #101828;
+  overflow-wrap: anywhere;
 }
 
 .recipe-details-page-title-row p {
@@ -96,6 +101,7 @@
   color: #475467;
   font-size: 1.08rem;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .recipe-details-page-owner-actions {
@@ -183,6 +189,7 @@
 .recipe-details-page-ingredient-item p {
   margin: 6px 0 0;
   color: #475467;
+  overflow-wrap: anywhere;
 }
 
 .recipe-details-page-ingredient-status {
@@ -223,6 +230,32 @@
 .recipe-details-page-error a {
   color: #101828;
   font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .recipe-details-page {
+    overflow-x: hidden;
+  }
+
+  .recipe-details-page-image {
+    min-height: 240px;
+  }
+
+  .recipe-details-page-content,
+  .recipe-details-page-sidebar-card,
+  .recipe-details-page-placeholder,
+  .recipe-details-page-error {
+    padding: 18px;
+  }
+
+  .recipe-details-page-ingredient-item {
+    flex-direction: column;
+  }
+
+  .recipe-details-page-ingredient-status {
+    align-self: flex-start;
+    white-space: normal;
+  }
 }
 
 @media (min-width: 1024px) {
