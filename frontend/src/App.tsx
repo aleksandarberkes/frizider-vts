@@ -1,5 +1,5 @@
 import './App.css';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './layout/Layout';
 import RequireAdmin from './components/auth/RequireAdmin';
 import RequireAuth from './components/auth/RequireAuth';
@@ -33,7 +33,7 @@ function App() {
             </RequireAuth>
           }
         >
-          <Route index element={<UserProfile />} />
+          <Route index element={<Navigate to="profile" replace />} />
           <Route path="favorites" element={<FridgeFavorites />} />
           <Route path="weekly-plan" element={<WeeklyPlan />} />
           <Route path="profile" element={<UserProfile />} />
