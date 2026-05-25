@@ -1,10 +1,19 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api, ApiError } from '../api';
+import AdminCategoriesSection from '../components/admin/admin-categories/AdminCategoriesSection';
+import AdminCommentsSection from '../components/admin/admin-comments/AdminCommentsSection';
+import AdminDashboardHeader from '../components/admin/admin-header/AdminDashboardHeader';
+import AdminRecipesSection from '../components/admin/admin-recipes/AdminRecipesSection';
+import AdminTabs, { AdminTabId } from '../components/admin/admin-tabs/AdminTabs';
 import { Category, Recipe, RecipeComment } from '../components/recipes/types';
-import { getCommentAuthor } from '../components/recipes/utils';
 import './AdminDashboard.css';
 
+const isAdminTab = (value: string | null): value is AdminTabId =>
+  value === 'categories' || value === 'recipes' || value === 'comments';
+
 function AdminDashboard() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [pendingRecipes, setPendingRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [comments, setComments] = useState<RecipeComment[]>([]);
@@ -19,6 +28,9 @@ function AdminDashboard() {
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [categorySubmitting, setCategorySubmitting] = useState(false);
   const [categoryDeletingId, setCategoryDeletingId] = useState<number | null>(null);
+
+  const tabParam = searchParams.get('tab');
+  const activeTab: AdminTabId = isAdminTab(tabParam) ? tabParam : 'categories';
 
   const mapError = (err: unknown, fallback: string) => {
     if (err instanceof TypeError) {
@@ -210,261 +222,93 @@ function AdminDashboard() {
 
   const pendingComments = comments.filter((comment) => !comment.is_approved);
 
+  const handleTabChange = (tab: AdminTabId) => {
+    setSearchParams({ tab });
+  };
+
+  const renderRefreshButton = () => {
+    if (activeTab === 'categories') {
+      return (
+        <button
+          type="button"
+          className="admin-dashboard-refresh"
+          onClick={() => void loadCategories()}
+          disabled={loadingCategories}
+        >
+          Osvezi kategorije
+        </button>
+      );
+    }
+
+    if (activeTab === 'recipes') {
+      return (
+        <button
+          type="button"
+          className="admin-dashboard-refresh"
+          onClick={() => void loadPendingRecipes()}
+          disabled={loadingRecipes}
+        >
+          Osvezi recepte
+        </button>
+      );
+    }
+
+    return (
+      <button
+        type="button"
+        className="admin-dashboard-refresh"
+        onClick={() => void loadComments()}
+        disabled={loadingComments}
+      >
+        Osvezi komentare
+      </button>
+    );
+  };
+
   return (
     <section className="admin-dashboard">
-      <div className="admin-dashboard-header">
-        <div>
-          <p className="admin-dashboard-eyebrow">Administracija</p>
-          <h1>Admin kontrolna tabla</h1>
-          <p>Dashboard sada pokriva kategorije, odobravanje recepata i moderaciju komentara.</p>
-        </div>
-        <div className="admin-dashboard-actions">
-          <button
-            type="button"
-            className="admin-dashboard-refresh"
-            onClick={() => void loadCategories()}
-            disabled={loadingCategories}
-          >
-            Osvezi kategorije
-          </button>
-          <button
-            type="button"
-            className="admin-dashboard-refresh"
-            onClick={() => void loadPendingRecipes()}
-            disabled={loadingRecipes}
-          >
-            Osvezi recepte
-          </button>
-          <button
-            type="button"
-            className="admin-dashboard-refresh"
-            onClick={() => void loadComments()}
-            disabled={loadingComments}
-          >
-            Osvezi komentare
-          </button>
-        </div>
-      </div>
+      <AdminDashboardHeader refreshAction={renderRefreshButton()} />
 
       {error ? <p className="admin-dashboard-error">{error}</p> : null}
 
+      <AdminTabs activeTab={activeTab} onTabChange={handleTabChange} />
+
       <div className="admin-dashboard-layout">
-        <article className="admin-dashboard-card">
-          <div className="admin-dashboard-card-head">
-            <div>
-              <h2>Kategorije recepata</h2>
-              <p>Dodavanje, izmena i brisanje kategorija koje koriste recepti i filteri.</p>
-            </div>
-          </div>
+        {activeTab === 'categories' ? (
+          <AdminCategoriesSection
+            categories={categories}
+            loading={loadingCategories}
+            categoryName={categoryName}
+            editingCategoryId={editingCategoryId}
+            categorySubmitting={categorySubmitting}
+            categoryDeletingId={categoryDeletingId}
+            onCategoryNameChange={setCategoryName}
+            onSubmit={submitCategory}
+            onReset={resetCategoryForm}
+            onStartEdit={startEditCategory}
+            onDelete={(categoryId) => void deleteCategory(categoryId)}
+          />
+        ) : null}
 
-          <form className="admin-dashboard-form" onSubmit={submitCategory}>
-            <label className="admin-dashboard-field">
-              <span>Naziv kategorije</span>
-              <input
-                type="text"
-                value={categoryName}
-                onChange={(event) => setCategoryName(event.target.value)}
-                placeholder="npr. Dorucak"
-                disabled={categorySubmitting}
-              />
-            </label>
+        {activeTab === 'recipes' ? (
+          <AdminRecipesSection
+            pendingRecipes={pendingRecipes}
+            loading={loadingRecipes}
+            approvingId={approvingId}
+            onApprove={(recipe) => void approveRecipe(recipe)}
+          />
+        ) : null}
 
-            <div className="admin-dashboard-form-actions">
-              <button
-                type="submit"
-                className="admin-dashboard-primary"
-                disabled={categorySubmitting}
-              >
-                {categorySubmitting
-                  ? editingCategoryId
-                    ? 'Cuvanje...'
-                    : 'Dodavanje...'
-                  : editingCategoryId
-                    ? 'Sacuvaj izmenu'
-                    : 'Dodaj kategoriju'}
-              </button>
-              {editingCategoryId ? (
-                <button
-                  type="button"
-                  className="admin-dashboard-secondary"
-                  onClick={resetCategoryForm}
-                  disabled={categorySubmitting}
-                >
-                  Odustani
-                </button>
-              ) : null}
-            </div>
-          </form>
-
-          {loadingCategories ? (
-            <p className="admin-dashboard-empty">Ucitavanje kategorija...</p>
-          ) : categories.length === 0 ? (
-            <p className="admin-dashboard-empty">Nema unetih kategorija.</p>
-          ) : (
-            <table className="admin-dashboard-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Naziv</th>
-                  <th>Akcije</th>
-                </tr>
-              </thead>
-              <tbody>
-                {categories.map((category) => (
-                  <tr key={category.id}>
-                    <td>{category.id}</td>
-                    <td>{category.name}</td>
-                    <td className="admin-dashboard-row-actions">
-                      <button
-                        type="button"
-                        className="admin-dashboard-secondary"
-                        onClick={() => startEditCategory(category)}
-                        disabled={categorySubmitting || categoryDeletingId === category.id}
-                      >
-                        Izmeni
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-dashboard-danger"
-                        onClick={() => void deleteCategory(category.id)}
-                        disabled={categoryDeletingId === category.id}
-                      >
-                        {categoryDeletingId === category.id ? 'Brisem...' : 'Obrisi'}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </article>
-
-        <article className="admin-dashboard-card">
-          <div className="admin-dashboard-card-head">
-            <div>
-              <h2>Objava recepata</h2>
-              <p>Admin ovde odobrava recepte. Tek nakon potvrde gost moze da ih vidi.</p>
-            </div>
-          </div>
-
-          {loadingRecipes ? (
-            <p className="admin-dashboard-empty">Ucitavanje recepata...</p>
-          ) : pendingRecipes.length === 0 ? (
-            <p className="admin-dashboard-empty">Nema recepata koji cekaju objavu.</p>
-          ) : (
-            <table className="admin-dashboard-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Naziv</th>
-                  <th>Autor</th>
-                  <th>Cena</th>
-                  <th>Datum</th>
-                  <th>Akcija</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pendingRecipes.map((recipe) => (
-                  <tr key={recipe.id}>
-                    <td>{recipe.id}</td>
-                    <td>{recipe.name}</td>
-                    <td>#{recipe.created_by}</td>
-                    <td>{recipe.estimated_price ? `${recipe.estimated_price} RSD` : '-'}</td>
-                    <td>{new Date(recipe.created_at).toLocaleDateString('sr-RS')}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="admin-dashboard-approve"
-                        onClick={() => void approveRecipe(recipe)}
-                        disabled={approvingId === recipe.id}
-                      >
-                        {approvingId === recipe.id ? 'Potvrdjujem...' : 'Odobri'}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </article>
-
-        <article className="admin-dashboard-card">
-          <div className="admin-dashboard-card-head">
-            <div>
-              <h2>Moderacija komentara</h2>
-              <p>
-                Admin moze da odobri, odbije ili obrise komentare. Trenutno ceka {pendingComments.length}{' '}
-                komentara.
-              </p>
-            </div>
-          </div>
-
-          {loadingComments ? (
-            <p className="admin-dashboard-empty">Ucitavanje komentara...</p>
-          ) : comments.length === 0 ? (
-            <p className="admin-dashboard-empty">Nema komentara za moderaciju.</p>
-          ) : (
-            <table className="admin-dashboard-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Recept</th>
-                  <th>Autor</th>
-                  <th>Status</th>
-                  <th>Komentar</th>
-                  <th>Akcije</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comments.map((comment) => (
-                  <tr key={comment.id}>
-                    <td>{comment.id}</td>
-                    <td>{comment.recipe_name ?? `#${comment.recipe_id}`}</td>
-                    <td>{getCommentAuthor(comment)}</td>
-                    <td>
-                      <span
-                        className={
-                          comment.is_approved
-                            ? 'admin-dashboard-status admin-dashboard-status-approved'
-                            : 'admin-dashboard-status admin-dashboard-status-pending'
-                        }
-                      >
-                        {comment.is_approved ? 'Odobren' : 'Na cekanju'}
-                      </span>
-                    </td>
-                    <td className="admin-dashboard-comment-cell">{comment.content}</td>
-                    <td className="admin-dashboard-row-actions">
-                      <button
-                        type="button"
-                        className="admin-dashboard-approve"
-                        onClick={() => void updateCommentStatus(comment, true)}
-                        disabled={commentBusyId === comment.id || comment.is_approved}
-                      >
-                        {commentBusyId === comment.id && !comment.is_approved ? 'Radim...' : 'Odobri'}
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-dashboard-secondary"
-                        onClick={() => void updateCommentStatus(comment, false)}
-                        disabled={commentBusyId === comment.id || !comment.is_approved}
-                      >
-                        Odbij
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-dashboard-danger"
-                        onClick={() => void deleteComment(comment.id)}
-                        disabled={commentBusyId === comment.id}
-                      >
-                        {commentBusyId === comment.id ? 'Brisem...' : 'Obrisi'}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </article>
+        {activeTab === 'comments' ? (
+          <AdminCommentsSection
+            comments={comments}
+            pendingCommentsCount={pendingComments.length}
+            loading={loadingComments}
+            commentBusyId={commentBusyId}
+            onUpdateStatus={(comment, isApproved) => void updateCommentStatus(comment, isApproved)}
+            onDelete={(commentId) => void deleteComment(commentId)}
+          />
+        ) : null}
       </div>
     </section>
   );
