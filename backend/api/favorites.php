@@ -4,6 +4,18 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/util.php';
 require_once __DIR__ . '/../config/auth.php';
 
+function normalizeFavoriteRow(array $row): array
+{
+    $row['recipe_id'] = (int)$row['recipe_id'];
+    if (array_key_exists('created_by', $row)) {
+        $row['created_by'] = (int)$row['created_by'];
+    }
+    if (array_key_exists('is_approved', $row)) {
+        $row['is_approved'] = (bool)$row['is_approved'];
+    }
+    return $row;
+}
+
 // /api/favorites             → caller's favorites
 // /api/favorites/{recipe_id} → a single favorite slot
 
@@ -36,7 +48,8 @@ if ($method === 'GET' && $recipeId === null) {
         );
         $stmt->execute([':uid' => $caller['id']]);
     }
-    respondJson(200, $stmt->fetchAll());
+    $rows = array_map('normalizeFavoriteRow', $stmt->fetchAll());
+    respondJson(200, $rows);
 }
 
 // POST /api/favorites — add a favorite. user_id forced from session.
