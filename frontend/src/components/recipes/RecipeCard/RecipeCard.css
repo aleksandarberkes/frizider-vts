@@ -3,8 +3,8 @@
   border: 1px solid #e9ddd4;
   border-radius: 22px;
   background-color: #ffffff;
-  max-width: 380px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .recipe-card-image {
@@ -98,9 +98,6 @@
 }
 
 @media (min-width: 1024px) {
-  .recipe-card {
-    margin: 0;
-  }
   .recipe-card-footer {
     flex-direction: row;
     align-items: center;
