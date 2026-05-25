@@ -1,3 +1,5 @@
+import EmptyState from '../../feedback/EmptyState';
+import LoadingState from '../../feedback/LoadingState';
 import { Recipe } from '../../recipes/types';
 
 type AdminRecipesSectionProps = {
@@ -23,9 +25,9 @@ function AdminRecipesSection({
       </div>
 
       {loading ? (
-        <p className="admin-dashboard-empty">Ucitavanje recepata...</p>
+        <LoadingState className="admin-dashboard-empty" message="Ucitavanje recepata..." />
       ) : pendingRecipes.length === 0 ? (
-        <p className="admin-dashboard-empty">Nema recepata koji cekaju objavu.</p>
+        <EmptyState className="admin-dashboard-empty" message="Nema recepata koji cekaju objavu." />
       ) : (
         <table className="admin-dashboard-table">
           <thead>

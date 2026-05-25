@@ -1,3 +1,5 @@
+import EmptyState from '../../feedback/EmptyState';
+import LoadingState from '../../feedback/LoadingState';
 import { RecipeComment } from '../../recipes/types';
 import { getCommentAuthor } from '../../recipes/utils';
 
@@ -28,9 +30,9 @@ function AdminCommentsSection({
       </div>
 
       {loading ? (
-        <p className="admin-dashboard-empty">Ucitavanje komentara...</p>
+        <LoadingState className="admin-dashboard-empty" message="Ucitavanje komentara..." />
       ) : comments.length === 0 ? (
-        <p className="admin-dashboard-empty">Nema komentara za moderaciju.</p>
+        <EmptyState className="admin-dashboard-empty" message="Nema komentara za moderaciju." />
       ) : (
         <table className="admin-dashboard-table">
           <thead>

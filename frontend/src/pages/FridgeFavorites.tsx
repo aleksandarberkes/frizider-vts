@@ -1,10 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { api, ApiError } from "../api";
+import EmptyState from "../components/feedback/EmptyState";
+import ErrorState from "../components/feedback/ErrorState";
+import LoadingState from "../components/feedback/LoadingState";
 import RecipeGrid from "../components/recipes/RecipeGrid/RecipeGrid";
-import { FavoriteRecipe, Recipe } from "../components/recipes/types";
+import {
+	FavoriteRecipe,
+	RatingAggregate,
+	Recipe,
+} from "../components/recipes/types";
 
 function FridgeFavorites() {
 	const [recipes, setRecipes] = useState<Recipe[]>([]);
+	const [ratingSummary, setRatingSummary] = useState<
+		Record<number, RatingAggregate>
+	>({});
 	const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
 	const [favoriteBusyId, setFavoriteBusyId] = useState<number | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -24,11 +34,24 @@ function FridgeFavorites() {
 					Number(entry.recipe_id),
 				);
 				const favoriteSet = new Set(nextFavoriteIds);
+				const favoriteRecipes = recipesResponse.filter((recipe) =>
+					favoriteSet.has(recipe.id),
+				);
+				const ratingResponses = await Promise.all(
+					favoriteRecipes.map((recipe) =>
+						api.get<RatingAggregate>(`/api/ratings/recipe/${recipe.id}`),
+					),
+				);
+				const nextRatingSummary = ratingResponses.reduce<
+					Record<number, RatingAggregate>
+				>((acc, aggregate) => {
+					acc[aggregate.recipe_id] = aggregate;
+					return acc;
+				}, {});
 
 				setFavoriteIds(nextFavoriteIds);
-				setRecipes(
-					recipesResponse.filter((recipe) => favoriteSet.has(recipe.id)),
-				);
+				setRecipes(favoriteRecipes);
+				setRatingSummary(nextRatingSummary);
 			} catch (err) {
 				if (err instanceof TypeError) {
 					setError(
@@ -57,6 +80,11 @@ function FridgeFavorites() {
 			if (favoriteSet.has(recipeId)) {
 				await api.delete<{ ok: boolean }>(`/api/favorites/${recipeId}`);
 				setFavoriteIds((current) => current.filter((id) => id !== recipeId));
+				setRatingSummary((current) => {
+					const next = { ...current };
+					delete next[recipeId];
+					return next;
+				});
 				setRecipes((current) =>
 					current.filter((recipe) => recipe.id !== recipeId),
 				);
@@ -84,17 +112,17 @@ function FridgeFavorites() {
 			<h2>Omiljeni recepti</h2>
 			<p>Ovde su recepti koje si lajkovao i sacuvao u omiljene.</p>
 
-			{error ? <p>{error}</p> : null}
+			{error ? <ErrorState message={error} /> : null}
 
 			{loading ? (
-				<p>Ucitavanje omiljenih recepata...</p>
+				<LoadingState message="Ucitavanje omiljenih recepata..." />
 			) : recipes.length === 0 ? (
-				<p>Jos uvek nemas sacuvanih omiljenih recepata.</p>
+				<EmptyState message="Jos uvek nemas sacuvanih omiljenih recepata." />
 			) : (
 				<div className="fridge-favorites-container">
 					<RecipeGrid
 						recipes={recipes}
-						ratingSummary={{}}
+						ratingSummary={ratingSummary}
 						favoriteIds={favoriteSet}
 						favoriteBusyId={favoriteBusyId}
 						onToggleFavorite={(recipeId) => void toggleFavorite(recipeId)}

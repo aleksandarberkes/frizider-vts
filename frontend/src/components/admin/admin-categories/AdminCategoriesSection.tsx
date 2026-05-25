@@ -1,4 +1,6 @@
 import { FormEvent } from 'react';
+import EmptyState from '../../feedback/EmptyState';
+import LoadingState from '../../feedback/LoadingState';
 import { Category } from '../../recipes/types';
 
 type AdminCategoriesSectionProps = {
@@ -73,9 +75,9 @@ function AdminCategoriesSection({
       </form>
 
       {loading ? (
-        <p className="admin-dashboard-empty">Ucitavanje kategorija...</p>
+        <LoadingState className="admin-dashboard-empty" message="Ucitavanje kategorija..." />
       ) : categories.length === 0 ? (
-        <p className="admin-dashboard-empty">Nema unetih kategorija.</p>
+        <EmptyState className="admin-dashboard-empty" message="Nema unetih kategorija." />
       ) : (
         <table className="admin-dashboard-table">
           <thead>

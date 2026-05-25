@@ -25,6 +25,7 @@ import {
 	getRecipeVisual,
 } from "../../components/recipes/utils";
 import "./RecipeDetails.css";
+import LoadingState from "../../components/feedback/LoadingState";
 
 type FridgeIngredient = {
 	ingredient_id: number;
@@ -493,11 +494,7 @@ function RecipeDetails() {
 
 	if (loading) {
 		return (
-			<section className="recipe-details-page">
-				<p className="recipe-details-page-placeholder">
-					Ucitavanje recepta...
-				</p>
-			</section>
+			<LoadingState message="Ucitavanje recepta..." className="recipe-details-page-loading" />
 		);
 	}
 
