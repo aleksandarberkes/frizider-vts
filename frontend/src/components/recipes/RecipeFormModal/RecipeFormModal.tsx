@@ -18,7 +18,7 @@ type RecipeFormModalProps = {
   onImageFileChange: (file: File | null) => void;
   onIngredientRowChange: (
     index: number,
-    field: 'ingredient_id' | 'quantity',
+    field: 'ingredient_id' | 'ingredient_name' | 'unit' | 'quantity',
     value: string,
   ) => void;
   onAddIngredientRow: () => void;
@@ -198,21 +198,25 @@ function RecipeFormModal({
             </div>
 
             <div className="recipe-form-modal-ingredients">
+              <datalist id="recipe-form-ingredient-suggestions">
+                {ingredientsCatalog.map((ingredient) => (
+                  <option key={ingredient.id} value={ingredient.name}>
+                    {ingredient.unit}
+                  </option>
+                ))}
+              </datalist>
+
               {recipeForm.ingredients.map((row, index) => (
                 <div key={`ingredient-row-${index}`} className="recipe-form-modal-ingredient-row">
-                  <select
-                    value={row.ingredient_id}
+                  <input
+                    type="text"
+                    list="recipe-form-ingredient-suggestions"
+                    value={row.ingredient_name}
                     onChange={(event) =>
-                      onIngredientRowChange(index, 'ingredient_id', event.target.value)
+                      onIngredientRowChange(index, 'ingredient_name', event.target.value)
                     }
-                  >
-                    <option value="">Izaberi namirnicu</option>
-                    {ingredientsCatalog.map((ingredient) => (
-                      <option key={ingredient.id} value={ingredient.id}>
-                        {ingredient.name} ({ingredient.unit})
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="Naziv namirnice"
+                  />
 
                   <input
                     type="number"
@@ -221,6 +225,13 @@ function RecipeFormModal({
                     value={row.quantity}
                     onChange={(event) => onIngredientRowChange(index, 'quantity', event.target.value)}
                     placeholder="Kolicina"
+                  />
+
+                  <input
+                    type="text"
+                    value={row.unit}
+                    onChange={(event) => onIngredientRowChange(index, 'unit', event.target.value)}
+                    placeholder="Jedinica mere"
                   />
 
                   <button type="button" onClick={() => onRemoveIngredientRow(index)}>

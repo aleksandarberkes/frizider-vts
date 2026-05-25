@@ -1,7 +1,14 @@
 import { API_BASE_URL } from '../../api';
-import { Recipe, RecipeComment, RecipeFormState } from './types';
+import { IngredientOption, Recipe, RecipeComment, RecipeFormIngredient, RecipeFormState } from './types';
 
 const backendOrigin = new URL(API_BASE_URL).origin;
+
+export const emptyRecipeIngredientRow = (): RecipeFormIngredient => ({
+  ingredient_id: '',
+  ingredient_name: '',
+  unit: '',
+  quantity: '',
+});
 
 export const emptyRecipeForm = (): RecipeFormState => ({
   name: '',
@@ -9,8 +16,27 @@ export const emptyRecipeForm = (): RecipeFormState => ({
   image_path: '',
   estimated_price: '',
   categories: [],
-  ingredients: [{ ingredient_id: '', quantity: '' }],
+  ingredients: [emptyRecipeIngredientRow()],
 });
+
+export const normalizeCatalogText = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+
+export const findIngredientByName = (ingredientsCatalog: IngredientOption[], value: string) => {
+  const normalizedValue = normalizeCatalogText(value);
+  if (!normalizedValue) {
+    return null;
+  }
+
+  return (
+    ingredientsCatalog.find((ingredient) => normalizeCatalogText(ingredient.name) === normalizedValue) ??
+    null
+  );
+};
 
 export const formatPrice = (value: number | null) => {
   if (value === null) {

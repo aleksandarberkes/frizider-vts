@@ -54,6 +54,7 @@ export type RecipeComment = {
   id: number;
   user_id: number;
   recipe_id: number;
+  recipe_name?: string | null;
   rating?: number | null;
   content: string;
   is_approved: boolean;
@@ -64,6 +65,8 @@ export type RecipeComment = {
 
 export type RecipeFormIngredient = {
   ingredient_id: string;
+  ingredient_name: string;
+  unit: string;
   quantity: string;
 };
 
