@@ -11,6 +11,15 @@
   gap: 16px;
 }
 
+.admin-dashboard-eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 700;
+  color: #607086;
+}
+
 .admin-dashboard-header h1 {
   margin: 0 0 8px;
   font-size: 32px;
@@ -22,12 +31,75 @@
   max-width: 620px;
 }
 
+.admin-dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-dashboard-layout {
+  display: grid;
+  gap: 20px;
+}
+
 .admin-dashboard-card {
   background: #ffffff;
   border: 1px solid #d9e1ea;
   border-radius: 18px;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
   overflow: hidden;
+}
+
+.admin-dashboard-card-head {
+  padding: 20px 22px 0;
+}
+
+.admin-dashboard-card-head h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+
+.admin-dashboard-card-head p {
+  margin: 0;
+  color: #5f6b7a;
+}
+
+.admin-dashboard-form {
+  padding: 20px 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.admin-dashboard-field {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-dashboard-field span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #304256;
+}
+
+.admin-dashboard-field input {
+  width: 100%;
+  border: 1px solid #c9d6e3;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: #142133;
+  background: #ffffff;
+}
+
+.admin-dashboard-field input:focus {
+  outline: 2px solid #cfe2ff;
+  border-color: #7ba7e1;
+}
+
+.admin-dashboard-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .admin-dashboard-table {
@@ -50,6 +122,38 @@
   background: #f8fafc;
 }
 
+.admin-dashboard-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-dashboard-comment-cell {
+  max-width: 420px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.admin-dashboard-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-dashboard-status-approved {
+  background: #e7f9ee;
+  color: #166534;
+}
+
+.admin-dashboard-status-pending {
+  background: #fff4db;
+  color: #9a6700;
+}
+
 .admin-dashboard-empty,
 .admin-dashboard-error {
   margin: 0;
@@ -64,7 +168,10 @@
 }
 
 .admin-dashboard-refresh,
-.admin-dashboard-approve {
+.admin-dashboard-approve,
+.admin-dashboard-primary,
+.admin-dashboard-secondary,
+.admin-dashboard-danger {
   border: 0;
   border-radius: 999px;
   padding: 10px 16px;
@@ -72,9 +179,15 @@
   cursor: pointer;
 }
 
-.admin-dashboard-refresh {
+.admin-dashboard-refresh,
+.admin-dashboard-secondary {
   background: #e8eef5;
   color: #142133;
+}
+
+.admin-dashboard-primary {
+  background: #174ea6;
+  color: #ffffff;
 }
 
 .admin-dashboard-approve {
@@ -82,13 +195,21 @@
   color: #ffffff;
 }
 
+.admin-dashboard-danger {
+  background: #b42318;
+  color: #ffffff;
+}
+
 .admin-dashboard-refresh:disabled,
-.admin-dashboard-approve:disabled {
+.admin-dashboard-approve:disabled,
+.admin-dashboard-primary:disabled,
+.admin-dashboard-secondary:disabled,
+.admin-dashboard-danger:disabled {
   opacity: 0.6;
   cursor: wait;
 }
 
-@media (max-width: 900px) {
+@media (min-width: 1024px) {
   .admin-dashboard {
     padding: 20px;
   }

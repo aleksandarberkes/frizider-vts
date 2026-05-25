@@ -7,6 +7,7 @@ type RecipeCommentsSectionProps = {
   comments: RecipeComment[];
   commentDraft: string;
   commentSaving: boolean;
+  commentNotice?: string | null;
   currentUserRating?: number;
   ratingBusy: boolean;
   isLoggedIn: boolean;
@@ -20,6 +21,7 @@ function RecipeCommentsSection({
   comments,
   commentDraft,
   commentSaving,
+  commentNotice,
   currentUserRating,
   ratingBusy,
   isLoggedIn,
@@ -68,6 +70,7 @@ function RecipeCommentsSection({
             <button type="submit" disabled={commentSaving}>
               {commentSaving ? 'Objavljivanje...' : 'Objavi Komentar'}
             </button>
+            {commentNotice ? <p className="recipe-comments-notice">{commentNotice}</p> : null}
           </form>
         ) : (
           <button type="button" className="recipe-comments-login" onClick={onPromptLogin}>

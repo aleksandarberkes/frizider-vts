@@ -4,51 +4,63 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/util.php';
 require_once __DIR__ . '/../config/auth.php';
 
+function normalizeCommentRow(array $row): array
+{
+    $row['id'] = (int)$row['id'];
+    $row['user_id'] = (int)$row['user_id'];
+    $row['recipe_id'] = (int)$row['recipe_id'];
+    $row['is_approved'] = (bool)$row['is_approved'];
+    if (array_key_exists('rating', $row) && $row['rating'] !== null) {
+        $row['rating'] = (int)$row['rating'];
+    }
+    return $row;
+}
+
 $id = intSegment($segments, 2);
 
 // GET /api/comments?recipe_id=N — list comments for a recipe.
+// GET /api/comments — admin-only full moderation list
 //   admin → all
-//   logged-in → is_approved=1 OR own
-//   anonymous → is_approved=1
+//   everyone else → is_approved=1
 if ($method === 'GET' && $id === null) {
+    $caller  = currentUser();
+    $isAdmin = ($caller['role_name'] ?? null) === 'admin';
     $recipeId = isset($_GET['recipe_id']) ? (int)$_GET['recipe_id'] : 0;
-    if ($recipeId <= 0) {
+
+    if ($recipeId <= 0 && !$isAdmin) {
         respondError(422, 'recipe_id query param is required');
     }
 
-    $caller  = currentUser();
-    $isAdmin = ($caller['role_name'] ?? null) === 'admin';
-
     $pdo = getConnection();
-    if ($isAdmin) {
-        $stmt = $pdo->prepare(
+    if ($isAdmin && $recipeId <= 0) {
+        $stmt = $pdo->query(
             'SELECT c.id, c.user_id, c.recipe_id, c.content, c.is_approved, c.created_at,
-                    u.first_name, u.last_name, r.rating
+                    u.first_name, u.last_name, r.rating, rc.name AS recipe_name
              FROM comments c
              JOIN users u ON u.id = c.user_id
+             JOIN recipes rc ON rc.id = c.recipe_id
+             LEFT JOIN ratings r ON r.user_id = c.user_id AND r.recipe_id = c.recipe_id
+             ORDER BY c.is_approved ASC, c.id DESC'
+        );
+    } elseif ($isAdmin) {
+        $stmt = $pdo->prepare(
+            'SELECT c.id, c.user_id, c.recipe_id, c.content, c.is_approved, c.created_at,
+                    u.first_name, u.last_name, r.rating, rc.name AS recipe_name
+             FROM comments c
+             JOIN users u ON u.id = c.user_id
+             JOIN recipes rc ON rc.id = c.recipe_id
              LEFT JOIN ratings r ON r.user_id = c.user_id AND r.recipe_id = c.recipe_id
              WHERE c.recipe_id = :rid
              ORDER BY c.id'
         );
         $stmt->execute([':rid' => $recipeId]);
-    } elseif ($caller) {
-        $stmt = $pdo->prepare(
-            'SELECT c.id, c.user_id, c.recipe_id, c.content, c.is_approved, c.created_at,
-                    u.first_name, u.last_name, r.rating
-             FROM comments c
-             JOIN users u ON u.id = c.user_id
-             LEFT JOIN ratings r ON r.user_id = c.user_id AND r.recipe_id = c.recipe_id
-             WHERE c.recipe_id = :rid
-               AND (c.is_approved = 1 OR c.user_id = :uid)
-             ORDER BY c.id'
-        );
-        $stmt->execute([':rid' => $recipeId, ':uid' => $caller['id']]);
     } else {
         $stmt = $pdo->prepare(
             'SELECT c.id, c.user_id, c.recipe_id, c.content, c.is_approved, c.created_at,
-                    u.first_name, u.last_name, r.rating
+                    u.first_name, u.last_name, r.rating, rc.name AS recipe_name
              FROM comments c
              JOIN users u ON u.id = c.user_id
+             JOIN recipes rc ON rc.id = c.recipe_id
              LEFT JOIN ratings r ON r.user_id = c.user_id AND r.recipe_id = c.recipe_id
              WHERE c.recipe_id = :rid
                AND c.is_approved = 1
@@ -56,7 +68,8 @@ if ($method === 'GET' && $id === null) {
         );
         $stmt->execute([':rid' => $recipeId]);
     }
-    respondJson(200, $stmt->fetchAll());
+    $rows = array_map('normalizeCommentRow', $stmt->fetchAll());
+    respondJson(200, $rows);
 }
 
 // POST /api/comments — caller leaves a comment.
@@ -88,13 +101,13 @@ if ($method === 'POST' && $id === null) {
         ':c'   => $content,
     ]);
 
-    respondJson(201, [
+    respondJson(201, normalizeCommentRow([
         'id'          => (int)$pdo->lastInsertId(),
         'user_id'     => (int)$caller['id'],
         'recipe_id'   => $recipeId,
         'content'     => $content,
         'is_approved' => false,
-    ]);
+    ]));
 }
 
 // PUT /api/comments/{id} — owner can edit content; admin can edit content + is_approved.
@@ -141,8 +154,7 @@ if ($method === 'PUT' && $id !== null) {
     );
     $stmt->execute([':id' => $id]);
     $row = $stmt->fetch();
-    $row['is_approved'] = (bool)$row['is_approved'];
-    respondJson(200, $row);
+    respondJson(200, normalizeCommentRow($row));
 }
 
 // DELETE /api/comments/{id} — owner or admin

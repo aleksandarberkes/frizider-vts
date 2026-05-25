@@ -19,6 +19,8 @@ import {
 } from "../../components/recipes/types";
 import {
 	emptyRecipeForm,
+	emptyRecipeIngredientRow,
+	findIngredientByName,
 	formatPrice,
 	getRecipeVisual,
 } from "../../components/recipes/utils";
@@ -54,6 +56,7 @@ function RecipeDetails() {
 	const [ratingBusy, setRatingBusy] = useState(false);
 	const [commentDraft, setCommentDraft] = useState("");
 	const [commentSaving, setCommentSaving] = useState(false);
+	const [commentNotice, setCommentNotice] = useState<string | null>(null);
 
 	const [showRecipeForm, setShowRecipeForm] = useState(false);
 	const [recipeForm, setRecipeForm] = useState<RecipeFormState>(emptyRecipeForm);
@@ -81,6 +84,7 @@ function RecipeDetails() {
 
 		setLoading(true);
 		setPageError(null);
+		setCommentNotice(null);
 
 		try {
 			const [
@@ -218,6 +222,7 @@ function RecipeDetails() {
 		}
 
 		setCommentSaving(true);
+		setCommentNotice(null);
 		try {
 			await api.post("/api/comments", {
 				recipe_id: recipeId,
@@ -227,6 +232,7 @@ function RecipeDetails() {
 			setComments(
 				await api.get<RecipeComment[]>(`/api/comments?recipe_id=${recipeId}`),
 			);
+			setCommentNotice("Komentar je poslat na odobravanje administratoru.");
 		} catch (err) {
 			setPageError(mapError(err, "Komentar nije sacuvan."));
 		} finally {
@@ -255,9 +261,11 @@ function RecipeDetails() {
 				recipe.ingredients.length > 0
 					? recipe.ingredients.map((ingredient) => ({
 							ingredient_id: ingredient.ingredient_id.toString(),
+							ingredient_name: ingredient.name,
+							unit: ingredient.unit,
 							quantity: ingredient.quantity?.toString() ?? "",
 						}))
-					: [{ ingredient_id: "", quantity: "" }],
+					: [emptyRecipeIngredientRow()],
 		});
 		setSelectedImageFile(null);
 		setImagePreviewUrl(recipe.image_path ?? "");
@@ -309,9 +317,24 @@ function RecipeDetails() {
 		field: keyof RecipeFormIngredient,
 		value: string,
 	) => {
-		const nextRows = recipeForm.ingredients.map((row, rowIndex) =>
-			rowIndex === index ? { ...row, [field]: value } : row,
-		);
+		const nextRows = recipeForm.ingredients.map((row, rowIndex) => {
+			if (rowIndex !== index) {
+				return row;
+			}
+
+			const nextRow = { ...row, [field]: value };
+			if (field === "ingredient_name") {
+				const matchedIngredient = findIngredientByName(ingredientsCatalog, value);
+				nextRow.ingredient_id = matchedIngredient
+					? matchedIngredient.id.toString()
+					: "";
+				if (matchedIngredient && nextRow.unit.trim() === "") {
+					nextRow.unit = matchedIngredient.unit;
+				}
+			}
+
+			return nextRow;
+		});
 		setRecipeForm((current) => ({
 			...current,
 			ingredients: nextRows,
@@ -323,7 +346,7 @@ function RecipeDetails() {
 			...current,
 			ingredients: [
 				...current.ingredients,
-				{ ingredient_id: "", quantity: "" },
+				emptyRecipeIngredientRow(),
 			],
 		}));
 	};
@@ -335,7 +358,7 @@ function RecipeDetails() {
 		setRecipeForm((current) => ({
 			...current,
 			ingredients:
-				nextRows.length > 0 ? nextRows : [{ ingredient_id: "", quantity: "" }],
+				nextRows.length > 0 ? nextRows : [emptyRecipeIngredientRow()],
 		}));
 	};
 
@@ -352,14 +375,14 @@ function RecipeDetails() {
 	const submitRecipeForm = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
-		const cleanedIngredients = recipeForm.ingredients
-			.filter((row) => row.ingredient_id.trim() !== "")
-			.map((row) => ({
-				ingredient_id: Number(row.ingredient_id),
-				quantity: row.quantity.trim() === "" ? null : Number(row.quantity),
-			}));
+		const ingredientRows = recipeForm.ingredients.filter(
+			(row) =>
+				row.ingredient_name.trim() !== "" ||
+				row.quantity.trim() !== "" ||
+				row.unit.trim() !== "",
+		);
 
-		if (cleanedIngredients.length === 0) {
+		if (ingredientRows.length === 0) {
 			setRecipeFormError("Dodaj barem jednu namirnicu za recept.");
 			return;
 		}
@@ -368,6 +391,49 @@ function RecipeDetails() {
 		setRecipeFormError(null);
 
 		try {
+			const createdIngredients: IngredientOption[] = [];
+			const cleanedIngredients = [];
+
+			for (const row of ingredientRows) {
+				const ingredientName = row.ingredient_name.trim();
+				const unit = row.unit.trim();
+
+				if (ingredientName === "") {
+					setRecipeFormError("Svaka namirnica mora da ima naziv.");
+					return;
+				}
+
+				if (unit === "") {
+					setRecipeFormError(`Unesi jedinicu mere za "${ingredientName}".`);
+					return;
+				}
+
+				const matchedIngredient = findIngredientByName(
+					[...ingredientsCatalog, ...createdIngredients],
+					ingredientName,
+				);
+
+				let ingredientId: number;
+				if (matchedIngredient) {
+					ingredientId = matchedIngredient.id;
+				} else {
+					const createdIngredient = await api.post<IngredientOption>(
+						"/api/ingredients",
+						{
+							name: ingredientName,
+							unit,
+						},
+					);
+					createdIngredients.push(createdIngredient);
+					ingredientId = createdIngredient.id;
+				}
+
+				cleanedIngredients.push({
+					ingredient_id: ingredientId,
+					quantity: row.quantity.trim() === "" ? null : Number(row.quantity),
+				});
+			}
+
 			let imagePath = recipeForm.image_path.trim();
 			if (selectedImageFile) {
 				const formData = new FormData();
@@ -390,6 +456,13 @@ function RecipeDetails() {
 				ingredients: cleanedIngredients,
 				categories: recipeForm.categories,
 			});
+			if (createdIngredients.length > 0) {
+				setIngredientsCatalog((current) =>
+					[...current, ...createdIngredients].sort((left, right) =>
+						left.name.localeCompare(right.name, "sr"),
+					),
+				);
+			}
 			closeRecipeForm();
 			await loadDetail();
 		} catch (err) {
@@ -534,6 +607,7 @@ function RecipeDetails() {
 						comments={comments}
 						commentDraft={commentDraft}
 						commentSaving={commentSaving}
+						commentNotice={commentNotice}
 						currentUserRating={userRatings[recipeId]}
 						ratingBusy={ratingBusy}
 						isLoggedIn={!!user}

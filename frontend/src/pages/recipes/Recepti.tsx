@@ -19,7 +19,11 @@ import {
   RecipeFormState,
   SortBy,
 } from '../../components/recipes/types';
-import { emptyRecipeForm } from '../../components/recipes/utils';
+import {
+  emptyRecipeForm,
+  emptyRecipeIngredientRow,
+  findIngredientByName,
+} from '../../components/recipes/utils';
 import './Recepti.css';
 
 function Recepti() {
@@ -306,9 +310,22 @@ function Recepti() {
     field: keyof RecipeFormIngredient,
     value: string,
   ) => {
-    const nextRows = recipeForm.ingredients.map((row, rowIndex) =>
-      rowIndex === index ? { ...row, [field]: value } : row,
-    );
+    const nextRows = recipeForm.ingredients.map((row, rowIndex) => {
+      if (rowIndex !== index) {
+        return row;
+      }
+
+      const nextRow = { ...row, [field]: value };
+      if (field === 'ingredient_name') {
+        const matchedIngredient = findIngredientByName(ingredientsCatalog, value);
+        nextRow.ingredient_id = matchedIngredient ? matchedIngredient.id.toString() : '';
+        if (matchedIngredient && nextRow.unit.trim() === '') {
+          nextRow.unit = matchedIngredient.unit;
+        }
+      }
+
+      return nextRow;
+    });
     setRecipeForm((current) => ({
       ...current,
       ingredients: nextRows,
@@ -318,7 +335,7 @@ function Recepti() {
   const addIngredientRow = () => {
     setRecipeForm((current) => ({
       ...current,
-      ingredients: [...current.ingredients, { ingredient_id: '', quantity: '' }],
+      ingredients: [...current.ingredients, emptyRecipeIngredientRow()],
     }));
   };
 
@@ -326,7 +343,7 @@ function Recepti() {
     const nextRows = recipeForm.ingredients.filter((_, rowIndex) => rowIndex !== index);
     setRecipeForm((current) => ({
       ...current,
-      ingredients: nextRows.length > 0 ? nextRows : [{ ingredient_id: '', quantity: '' }],
+      ingredients: nextRows.length > 0 ? nextRows : [emptyRecipeIngredientRow()],
     }));
   };
 
@@ -348,14 +365,11 @@ function Recepti() {
       return;
     }
 
-    const cleanedIngredients = recipeForm.ingredients
-      .filter((row) => row.ingredient_id.trim() !== '')
-      .map((row) => ({
-        ingredient_id: Number(row.ingredient_id),
-        quantity: row.quantity.trim() === '' ? null : Number(row.quantity),
-      }));
+    const ingredientRows = recipeForm.ingredients.filter(
+      (row) => row.ingredient_name.trim() !== '' || row.quantity.trim() !== '' || row.unit.trim() !== '',
+    );
 
-    if (cleanedIngredients.length === 0) {
+    if (ingredientRows.length === 0) {
       setRecipeFormError('Dodaj barem jednu namirnicu za recept.');
       return;
     }
@@ -364,6 +378,46 @@ function Recepti() {
     setRecipeFormError(null);
 
     try {
+      const createdIngredients: IngredientOption[] = [];
+      const cleanedIngredients = [];
+
+      for (const row of ingredientRows) {
+        const ingredientName = row.ingredient_name.trim();
+        const unit = row.unit.trim();
+
+        if (ingredientName === '') {
+          setRecipeFormError('Svaka namirnica mora da ima naziv.');
+          return;
+        }
+
+        if (unit === '') {
+          setRecipeFormError(`Unesi jedinicu mere za "${ingredientName}".`);
+          return;
+        }
+
+        const matchedIngredient = findIngredientByName(
+          [...ingredientsCatalog, ...createdIngredients],
+          ingredientName,
+        );
+
+        let ingredientId: number;
+        if (matchedIngredient) {
+          ingredientId = matchedIngredient.id;
+        } else {
+          const createdIngredient = await api.post<IngredientOption>('/api/ingredients', {
+            name: ingredientName,
+            unit,
+          });
+          createdIngredients.push(createdIngredient);
+          ingredientId = createdIngredient.id;
+        }
+
+        cleanedIngredients.push({
+          ingredient_id: ingredientId,
+          quantity: row.quantity.trim() === '' ? null : Number(row.quantity),
+        });
+      }
+
       let imagePath = recipeForm.image_path.trim();
       if (selectedImageFile) {
         const formData = new FormData();
@@ -386,6 +440,12 @@ function Recepti() {
         await api.put<Recipe>(`/api/recipes/${editingRecipeId}`, payload);
       } else {
         await api.post<Recipe>('/api/recipes', payload);
+      }
+
+      if (createdIngredients.length > 0) {
+        setIngredientsCatalog((current) =>
+          [...current, ...createdIngredients].sort((left, right) => left.name.localeCompare(right.name, 'sr')),
+        );
       }
 
       closeRecipeForm();
