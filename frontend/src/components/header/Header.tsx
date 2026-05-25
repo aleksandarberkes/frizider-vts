@@ -82,11 +82,6 @@ const Header = () => {
 							<span>Recepti</span>
 						</Link>
 
-						<Link to="/favorites" className="nav-link">
-							<img src="/icons/fav-icon.svg" alt="Favorites icon" />
-							<span>Omiljeni</span>
-						</Link>
-
 						<button
 							type="button"
 							className="nav-link nav-link-button"
@@ -97,7 +92,11 @@ const Header = () => {
 						</button>
 
 						{user?.role_name === "admin" ? (
-							<Link to="/admin/dashboard" className="nav-link" onClick={closeMenu}>
+							<Link
+								to="/admin/dashboard"
+								className="nav-link"
+								onClick={closeMenu}
+							>
 								<img src="/icons/user-icon.svg" alt="Admin panel icon" />
 								<span>Admin panel</span>
 							</Link>
@@ -110,13 +109,21 @@ const Header = () => {
 								{/* <span className="navbar-user-badge">
 									{user.role_name === "admin" ? "Admin" : "Korisnik"}
 								</span> */}
-								<button type="button" className="btn btn-ghost" onClick={handleLogout}>
+								<button
+									type="button"
+									className="btn btn-ghost"
+									onClick={handleLogout}
+								>
 									Odjava
 								</button>
 							</>
 						) : (
 							<>
-								<button type="button" className="btn btn-ghost" onClick={openLoginModal}>
+								<button
+									type="button"
+									className="btn btn-ghost"
+									onClick={openLoginModal}
+								>
 									Prijava
 								</button>
 								<Link to="/register" className="btn btn-primary">
@@ -153,11 +160,6 @@ const Header = () => {
 							<span>Recepti</span>
 						</Link>
 
-						<Link to="/favorites" className="nav-link" onClick={closeMenu}>
-							<img src="/icons/fav-icon.svg" alt="Favorites icon" />
-							<span>Omiljeni</span>
-						</Link>
-
 						<button
 							type="button"
 							className="nav-link nav-link-button"
@@ -170,7 +172,11 @@ const Header = () => {
 						</button>
 
 						{user?.role_name === "admin" ? (
-							<Link to="/admin/dashboard" className="nav-link" onClick={closeMenu}>
+							<Link
+								to="/admin/dashboard"
+								className="nav-link"
+								onClick={closeMenu}
+							>
 								<span className="nav-link-icon">
 									<img src="/icons/user-icon.svg" alt="Admin panel icon" />
 								</span>

@@ -6,7 +6,6 @@ import RequireAuth from './components/auth/RequireAuth';
 import RequireGuest from './components/auth/RequireGuest';
 import AdminDashboard from './pages/AdminDashboard';
 import AccountSettings from './pages/AccountSettings';
-import Favorites from './pages/Favorites';
 import Fridge from './pages/fridge/Fridge';
 import FridgeFavorites from './pages/FridgeFavorites';
 import Home from './pages/Home';
@@ -24,7 +23,6 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/recipes" element={<Recepti />} />
         <Route path="/recipes/:id" element={<RecipeDetails />} />
-        <Route path="/favorites" element={<Favorites />} />
         <Route
           path="/fridge"
           element={
