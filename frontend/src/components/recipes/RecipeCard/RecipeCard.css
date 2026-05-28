@@ -69,7 +69,14 @@
   font-size: 0.95rem;
   line-height: 1.45;
 }
-
+.recipe-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.recipe-card-rating-star{
+  color: #fbbf24;
+}
 .recipe-card-footer {
   padding-top: 14px;
   border-top: 1px solid #e9eaef;

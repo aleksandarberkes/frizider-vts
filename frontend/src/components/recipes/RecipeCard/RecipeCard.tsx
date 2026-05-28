@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import RecipeMeta from '../RecipeMeta/RecipeMeta';
+
 import { RatingAggregate, Recipe } from '../types';
 import { formatPrice, getRecipeVisual } from '../utils';
 import './RecipeCard.css';
@@ -43,23 +43,17 @@ function RecipeCard({ recipe, aggregate, isFavorite, favoriteBusy, onToggleFavor
           <h2>{recipe.name}</h2>
           <p>{recipe.description ?? 'Opis recepta nije dodat.'}</p>
         </div>
-
-        <RecipeMeta
-          items={[
-            { label: 'Namirnice', value: `${recipe.ingredients.length}`, tone: 'blue' },
-            {
-              label: 'Kategorija',
-              value: `${recipe.categories.length}`,
-              category,
-              tone: 'category',
-            },
-            {
-              label: 'Ocena',
-              value: aggregate?.average ? `${aggregate.average.toFixed(1)}` : 'Nema',
-              tone: 'yellow',
-            },
-          ]}
-        />
+        <div className="recipe-card-rating">
+          {aggregate ? (
+            <>
+              <span className="recipe-card-rating-star">★</span>
+              <span className="recipe-card-rating-average">{aggregate.average ? aggregate.average.toFixed(1) : '0.0'}</span>
+             
+            </>
+          ) : (
+            <span className="recipe-card-rating-average">Nema ocena</span>
+          )}
+        </div>
 
         <div className="recipe-card-footer">
           <strong className="recipe-card-price">{formatPrice(recipe.estimated_price)}</strong>

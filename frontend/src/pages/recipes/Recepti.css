@@ -3,6 +3,16 @@
   gap: 24px;
 }
 
+.recipes-page-layout,
+.recipes-page-results {
+  display: grid;
+  gap: 22px;
+}
+
+.recipes-page-sidebar {
+  min-width: 0;
+}
+
 .recipes-page-error,
 .recipes-page-placeholder,
 .recipes-page-empty {
@@ -30,4 +40,15 @@
 .recipes-page-empty p {
   margin: 12px 0 0;
   color: #475467;
+}
+
+@media (min-width: 1024px) {
+  .recipes-page-layout {
+    grid-template-columns: 248px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .recipes-page-results {
+    gap: 20px;
+  }
 }

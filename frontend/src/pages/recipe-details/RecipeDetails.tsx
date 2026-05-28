@@ -5,7 +5,6 @@ import { useAuthModal } from "../../auth/AuthModalContext";
 import LoadingState from "../../components/feedback/LoadingState";
 import RecipeCommentsSection from "../../components/recipes/RecipeCommentsSection/RecipeCommentsSection";
 import RecipeFormModal from "../../components/recipes/RecipeFormModal/RecipeFormModal";
-import RecipeMeta from "../../components/recipes/RecipeMeta/RecipeMeta";
 import { useRecipeDetailsData } from "../../components/recipes/hooks/useRecipeDetailsData";
 import { useRecipeFavorites } from "../../components/recipes/hooks/useRecipeFavorites";
 import { useRecipeForm } from "../../components/recipes/hooks/useRecipeForm";
@@ -223,33 +222,7 @@ function RecipeDetails() {
 								) : null}
 							</div>
 
-							<RecipeMeta
-								items={[
-									{
-										label: "Namirnice",
-										value: `${recipe.ingredients.length}`,
-										tone: "blue",
-									},
-									{
-										label: "Kategorija",
-										value: `${recipe.categories.length}`,
-										category,
-										tone: "category",
-									},
-									{
-										label: "Ocena",
-										value: ratingAggregate?.average
-											? `${ratingAggregate.average.toFixed(1)}/5`
-											: "Nema",
-										tone: "yellow",
-									},
-									{
-										label: "Cena",
-										value: formatPrice(recipe.estimated_price),
-										tone: "green",
-									},
-								]}
-							/>
+						
 						</div>
 					</article>
 

@@ -1,4 +1,5 @@
-import { Category, PriceFilter, RatingFilter } from '../types';
+import { useState } from 'react';
+import { Category, PriceFilter, RatingFilter, SortBy } from '../types';
 import './RecipesFilters.css';
 
 type RecipesFiltersProps = {
@@ -7,12 +8,14 @@ type RecipesFiltersProps = {
   selectedCategoryId: number | 'all';
   priceFilter: PriceFilter;
   ratingFilter: RatingFilter;
+  sortBy: SortBy;
   favoritesOnly: boolean;
   canFilterFavorites: boolean;
   onSearchTermChange: (value: string) => void;
   onSelectedCategoryChange: (value: number | 'all') => void;
   onPriceFilterChange: (value: PriceFilter) => void;
   onRatingFilterChange: (value: RatingFilter) => void;
+  onSortByChange: (value: SortBy) => void;
   onFavoritesOnlyChange: () => void;
   onReset: () => void;
 };
@@ -23,101 +26,160 @@ function RecipesFilters({
   selectedCategoryId,
   priceFilter,
   ratingFilter,
+  sortBy,
   favoritesOnly,
   canFilterFavorites,
   onSearchTermChange,
   onSelectedCategoryChange,
   onPriceFilterChange,
   onRatingFilterChange,
+  onSortByChange,
   onFavoritesOnlyChange,
   onReset,
 }: RecipesFiltersProps) {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
   return (
-    <section className="recipes-filters">
-      <label className="recipes-filters-search">
-        <input
-          type="search"
-          value={searchTerm}
-          onChange={(event) => onSearchTermChange(event.target.value)}
-          placeholder="Pretrazite recepte po nazivu ili opisu..."
-        />
-      </label>
+    <section className={isMobileOpen ? 'recipes-filters recipes-filters-open' : 'recipes-filters'}>
+      <button
+        type="button"
+        className="recipes-filters-toggle"
+        aria-expanded={isMobileOpen}
+        onClick={() => setIsMobileOpen((current) => !current)}
+      >
+        <span className="recipes-filters-toggle-icon" aria-hidden="true" />
+        Filteri
+      </button>
 
-      <div className="recipes-filters-categories">
-        <div className="recipes-filters-header">
-          <h2>Kategorije</h2>
-          {canFilterFavorites ? (
-            <button
-              type="button"
-              className={
-                favoritesOnly
-                  ? 'recipes-filters-chip recipes-filters-chip-active'
-                  : 'recipes-filters-chip'
-              }
-              onClick={onFavoritesOnlyChange}
-            >
-              Moji omiljeni
-            </button>
-          ) : null}
+      <div className="recipes-filters-panel">
+        <div className="recipes-filters-heading">
+          <span className="recipes-filters-heading-icon" aria-hidden="true" />
+          <h2>Filteri</h2>
         </div>
 
-        <div className="recipes-filters-chips">
-          <button
-            type="button"
-            className={
-              selectedCategoryId === 'all'
-                ? 'recipes-filters-chip recipes-filters-chip-active'
-                : 'recipes-filters-chip'
-            }
-            onClick={() => onSelectedCategoryChange('all')}
-          >
-            Svi recepti
-          </button>
+        <label className="recipes-filters-search">
+          <span>Naziv recepta</span>
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(event) => onSearchTermChange(event.target.value)}
+            placeholder="npr. Pasta"
+          />
+        </label>
+
+        <fieldset className="recipes-filters-group">
+          <legend>Kategorija</legend>
+          <label className="recipes-filters-option">
+            <input
+              type="checkbox"
+              checked={selectedCategoryId === 'all'}
+              onChange={() => onSelectedCategoryChange('all')}
+            />
+            <span>Svi recepti</span>
+          </label>
           {categories.map((category) => (
-            <button
-              key={category.id}
-              type="button"
-              className={
-                selectedCategoryId === category.id
-                  ? 'recipes-filters-chip recipes-filters-chip-active'
-                  : 'recipes-filters-chip'
-              }
-              onClick={() => onSelectedCategoryChange(category.id)}
-            >
-              {category.name}
-            </button>
+            <label key={category.id} className="recipes-filters-option">
+              <input
+                type="checkbox"
+                checked={selectedCategoryId === category.id}
+                onChange={() => onSelectedCategoryChange(category.id)}
+              />
+              <span>{category.name}</span>
+            </label>
           ))}
-        </div>
-      </div>
+        </fieldset>
 
-      <div className="recipes-filters-controls">
-        <label className="recipes-filters-field">
-          <span>Cena</span>
-          <select
-            value={priceFilter}
-            onChange={(event) => onPriceFilterChange(event.target.value as PriceFilter)}
-          >
-            <option value="all">Sve cene</option>
-            <option value="budget">Do 400 RSD</option>
-            <option value="mid">401-800 RSD</option>
-            <option value="premium">Preko 800 RSD</option>
+        <fieldset className="recipes-filters-group">
+          <legend>Cenovni rang</legend>
+          <label className="recipes-filters-option">
+            <input
+              type="radio"
+              name="price-filter"
+              checked={priceFilter === 'all'}
+              onChange={() => onPriceFilterChange('all')}
+            />
+            <span>Sve</span>
+          </label>
+          <label className="recipes-filters-option">
+            <input
+              type="radio"
+              name="price-filter"
+              checked={priceFilter === 'budget'}
+              onChange={() => onPriceFilterChange('budget')}
+            />
+            <span>do 400 RSD</span>
+          </label>
+          <label className="recipes-filters-option">
+            <input
+              type="radio"
+              name="price-filter"
+              checked={priceFilter === 'mid'}
+              onChange={() => onPriceFilterChange('mid')}
+            />
+            <span>401-800 RSD</span>
+          </label>
+          <label className="recipes-filters-option">
+            <input
+              type="radio"
+              name="price-filter"
+              checked={priceFilter === 'premium'}
+              onChange={() => onPriceFilterChange('premium')}
+            />
+            <span>800+ RSD</span>
+          </label>
+        </fieldset>
+
+        <fieldset className="recipes-filters-group">
+          <legend>Ocena</legend>
+          <label className="recipes-filters-option">
+            <input
+              type="radio"
+              name="rating-filter"
+              checked={ratingFilter === 'all'}
+              onChange={() => onRatingFilterChange('all')}
+            />
+            <span>Sve ocene</span>
+          </label>
+          <label className="recipes-filters-option">
+            <input
+              type="radio"
+              name="rating-filter"
+              checked={ratingFilter === '4plus'}
+              onChange={() => onRatingFilterChange('4plus')}
+            />
+            <span>4.0+</span>
+          </label>
+          <label className="recipes-filters-option">
+            <input
+              type="radio"
+              name="rating-filter"
+              checked={ratingFilter === '45plus'}
+              onChange={() => onRatingFilterChange('45plus')}
+            />
+            <span>4.5+</span>
+          </label>
+        </fieldset>
+
+        <label className="recipes-filters-select">
+          <span>Sortiranje</span>
+          <select value={sortBy} onChange={(event) => onSortByChange(event.target.value as SortBy)}>
+            <option value="popular">Najpopularnije</option>
+            <option value="newest">Najnovije</option>
+            <option value="priceAsc">Cena rastuce</option>
+            <option value="priceDesc">Cena opadajuce</option>
+            <option value="name">Naziv A-Z</option>
           </select>
         </label>
 
-        <label className="recipes-filters-field">
-          <span>Ocena</span>
-          <select
-            value={ratingFilter}
-            onChange={(event) => onRatingFilterChange(event.target.value as RatingFilter)}
-          >
-            <option value="all">Sve ocene</option>
-            <option value="4plus">4.0 i vise</option>
-            <option value="45plus">4.5 i vise</option>
-          </select>
-        </label>
+        {canFilterFavorites ? (
+          <label className="recipes-filters-option recipes-filters-favorites">
+            <input type="checkbox" checked={favoritesOnly} onChange={onFavoritesOnlyChange} />
+            <span>Moji omiljeni</span>
+          </label>
+        ) : null}
 
         <button type="button" className="recipes-filters-reset" onClick={onReset}>
-          Resetuj filtere
+          Ponisti filtere
         </button>
       </div>
     </section>

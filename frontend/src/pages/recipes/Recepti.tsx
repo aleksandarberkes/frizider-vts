@@ -4,7 +4,6 @@ import RecipeFormModal from '../../components/recipes/RecipeFormModal/RecipeForm
 import RecipeGrid from '../../components/recipes/RecipeGrid/RecipeGrid';
 import RecipesFilters from '../../components/recipes/RecipesFilters/RecipesFilters';
 import RecipesHero from '../../components/recipes/RecipesHero/RecipesHero';
-import RecipesToolbar from '../../components/recipes/RecipesToolbar/RecipesToolbar';
 import { useRecipeFavorites } from '../../components/recipes/hooks/useRecipeFavorites';
 import { useRecipeFilters } from '../../components/recipes/hooks/useRecipeFilters';
 import { useRecipeForm } from '../../components/recipes/hooks/useRecipeForm';
@@ -89,46 +88,52 @@ function Recepti() {
 
   return (
     <section className="recipes-page">
-      <RecipesHero onCreateRecipe={recipeForm.openCreateRecipeForm} />
+      <div className="recipes-page-layout">
+        <aside className="recipes-page-sidebar">
+          <RecipesFilters
+            categories={categories}
+            searchTerm={searchTerm}
+            selectedCategoryId={selectedCategoryId}
+            priceFilter={priceFilter}
+            ratingFilter={ratingFilter}
+            sortBy={sortBy}
+            favoritesOnly={favoritesOnly}
+            canFilterFavorites={!!user}
+            onSearchTermChange={setSearchTerm}
+            onSelectedCategoryChange={setSelectedCategoryId}
+            onPriceFilterChange={setPriceFilter}
+            onRatingFilterChange={setRatingFilter}
+            onSortByChange={setSortBy}
+            onFavoritesOnlyChange={() => setFavoritesOnly((current) => !current)}
+            onReset={resetFilters}
+          />
+        </aside>
 
-      <RecipesFilters
-        categories={categories}
-        searchTerm={searchTerm}
-        selectedCategoryId={selectedCategoryId}
-        priceFilter={priceFilter}
-        ratingFilter={ratingFilter}
-        favoritesOnly={favoritesOnly}
-        canFilterFavorites={!!user}
-        onSearchTermChange={setSearchTerm}
-        onSelectedCategoryChange={setSelectedCategoryId}
-        onPriceFilterChange={setPriceFilter}
-        onRatingFilterChange={setRatingFilter}
-        onFavoritesOnlyChange={() => setFavoritesOnly((current) => !current)}
-        onReset={resetFilters}
-      />
+        <div className="recipes-page-results">
+          <RecipesHero onCreateRecipe={recipeForm.openCreateRecipeForm} />
 
-      {pageError ? <p className="recipes-page-error">{pageError}</p> : null}
+          {pageError ? <p className="recipes-page-error">{pageError}</p> : null}
 
-      <RecipesToolbar count={filteredRecipes.length} sortBy={sortBy} onSortByChange={setSortBy} />
+          {loading ? <p className="recipes-page-placeholder">Ucitavanje recepata...</p> : null}
 
-      {loading ? <p className="recipes-page-placeholder">Ucitavanje recepata...</p> : null}
+          {!loading && filteredRecipes.length === 0 ? (
+            <div className="recipes-page-empty">
+              <h2>Nema rezultata za izabrane filtere</h2>
+              <p>Promeni pretragu ili resetuj filtere da bi video vise recepata.</p>
+            </div>
+          ) : null}
 
-      {!loading && filteredRecipes.length === 0 ? (
-        <div className="recipes-page-empty">
-          <h2>Nema rezultata za izabrane filtere</h2>
-          <p>Promeni pretragu ili resetuj filtere da bi video vise recepata.</p>
+          {!loading && filteredRecipes.length > 0 ? (
+            <RecipeGrid
+              recipes={filteredRecipes}
+              ratingSummary={ratingSummary}
+              favoriteIds={favoriteSet}
+              favoriteBusyId={favoriteBusyId}
+              onToggleFavorite={toggleFavorite}
+            />
+          ) : null}
         </div>
-      ) : null}
-
-      {!loading && filteredRecipes.length > 0 ? (
-        <RecipeGrid
-          recipes={filteredRecipes}
-          ratingSummary={ratingSummary}
-          favoriteIds={favoriteSet}
-          favoriteBusyId={favoriteBusyId}
-          onToggleFavorite={toggleFavorite}
-        />
-      ) : null}
+      </div>
 
       <RecipeFormModal
         isOpen={recipeForm.showRecipeForm}
