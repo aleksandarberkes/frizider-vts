@@ -43,9 +43,16 @@
 .recipe-details-page-image {
   position: relative;
   min-height: 340px;
-  background-size: cover;
-  background-position: center;
+  overflow: hidden;
+  background: #f3f4f6;
   border-radius: 24px 24px 0 0;
+}
+
+.recipe-details-page-image img {
+  width: 100%;
+  height: 340px;
+  display: block;
+  object-fit: cover;
 }
 
 .recipe-details-page-tag {
@@ -129,6 +136,54 @@
   border: 1px solid #fecaca;
   background: #fff1f2;
   color: #be123c;
+}
+
+.recipe-details-page-meta {
+  display: grid;
+  gap: 12px;
+}
+
+.recipe-details-page-meta-item {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #fcfcfd;
+}
+
+.recipe-details-page-meta-item span {
+  color: #667085;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.recipe-details-page-meta-item strong {
+  color: #101828;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.recipe-details-page-meta-item small {
+  color: #475467;
+  font-size: 0.82rem;
+}
+
+.recipe-details-page-meta-blue {
+  background: #eff6ff;
+}
+
+.recipe-details-page-meta-category {
+  background: #f5f3ff;
+}
+
+.recipe-details-page-meta-yellow {
+  background: #fffbeb;
+}
+
+.recipe-details-page-meta-green {
+  background: #ecfdf3;
 }
 
 .recipe-details-page-steps {
@@ -241,6 +296,10 @@
     min-height: 240px;
   }
 
+  .recipe-details-page-image img {
+    height: 240px;
+  }
+
   .recipe-details-page-content,
   .recipe-details-page-sidebar-card,
   .recipe-details-page-placeholder,
@@ -255,6 +314,12 @@
   .recipe-details-page-ingredient-status {
     align-self: flex-start;
     white-space: normal;
+  }
+}
+
+@media (min-width: 640px) {
+  .recipe-details-page-meta {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

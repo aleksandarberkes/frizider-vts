@@ -1,4 +1,5 @@
 import { FormEvent } from 'react';
+import ReactStars from 'react-rating-stars-component';
 import { RecipeComment } from '../types';
 import { formatDate, getCommentAuthor } from '../utils';
 import './RecipeCommentsSection.css';
@@ -41,21 +42,19 @@ function RecipeCommentsSection({
         <p>Vasa Ocena</p>
 
         <div className="recipe-comments-rating">
-          {ratingValues.map((value) => (
-            <button
-              key={value}
-              type="button"
-              className={
-                (currentUserRating ?? 0) >= value
-                  ? 'recipe-comments-star recipe-comments-star-active'
-                  : 'recipe-comments-star'
-              }
-              onClick={() => (isLoggedIn ? onRateRecipe(value) : onPromptLogin())}
-              disabled={ratingBusy}
-            >
-              ★
-            </button>
-          ))}
+          <ReactStars
+            classNames="recipe-comments-react-stars"
+            count={5}
+            value={currentUserRating ?? 0}
+            onChange={onRateRecipe}
+            size={24}
+            char="★"
+            isHalf={false}
+            color="#d0d5dd"
+            edit={isLoggedIn && !ratingBusy}
+            activeColor="#ffd700"
+            a11y
+          />
         </div>
 
         {isLoggedIn ? (

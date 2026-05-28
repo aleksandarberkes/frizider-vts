@@ -3,6 +3,8 @@ import { IngredientOption, Recipe, RecipeComment, RecipeFormIngredient, RecipeFo
 
 const backendOrigin = new URL(API_BASE_URL).origin;
 
+export const RECIPE_IMAGE_PLACEHOLDER = `${process.env.PUBLIC_URL}/images/image-placeholder.jpg`;
+
 export const emptyRecipeIngredientRow = (): RecipeFormIngredient => ({
   ingredient_id: '',
   ingredient_name: '',
@@ -93,17 +95,8 @@ export const getRecipeVisual = (recipe: Recipe) => {
     };
   }
 
-  const palette = [
-    ['#f97316', '#fb7185'],
-    ['#22c55e', '#14b8a6'],
-    ['#f59e0b', '#ef4444'],
-    ['#38bdf8', '#6366f1'],
-    ['#84cc16', '#10b981'],
-  ];
-  const seed = recipe.id % palette.length;
-
   return {
-    imageUrl: '',
-    gradient: `linear-gradient(135deg, ${palette[seed][0]} 0%, ${palette[seed][1]} 100%)`,
+    imageUrl: RECIPE_IMAGE_PLACEHOLDER,
+    gradient: '',
   };
 };

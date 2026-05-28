@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { RatingAggregate, Recipe } from '../types';
-import { formatPrice, getRecipeVisual } from '../utils';
+import { formatPrice, getRecipeVisual, RECIPE_IMAGE_PLACEHOLDER } from '../utils';
 import './RecipeCard.css';
 
 type RecipeCardProps = {
@@ -18,14 +18,14 @@ function RecipeCard({ recipe, aggregate, isFavorite, favoriteBusy, onToggleFavor
 
   return (
     <article className="recipe-card">
-      <div
-        className="recipe-card-image"
-        style={
-          visual.imageUrl
-            ? { backgroundImage: `url(${visual.imageUrl})` }
-            : { backgroundImage: visual.gradient }
-        }
-      >
+      <div className="recipe-card-image">
+        <img
+          src={visual.imageUrl}
+          alt={recipe.name}
+          onError={(event) => {
+            event.currentTarget.src = RECIPE_IMAGE_PLACEHOLDER;
+          }}
+        />
         <span className="recipe-card-tag">{category}</span>
         <button
           type="button"

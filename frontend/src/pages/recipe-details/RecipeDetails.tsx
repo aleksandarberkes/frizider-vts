@@ -15,6 +15,7 @@ import { mapApiError } from "../../utils/mapApiError";
 import {
 	formatPrice,
 	getRecipeVisual,
+	RECIPE_IMAGE_PLACEHOLDER,
 } from "../../components/recipes/utils";
 import "./RecipeDetails.css";
 
@@ -174,12 +175,14 @@ function RecipeDetails() {
 					<article className="recipe-details-page-hero-card">
 						<div
 							className="recipe-details-page-image"
-							style={
-								visual.imageUrl
-									? { backgroundImage: `url(${visual.imageUrl})` }
-									: { backgroundImage: visual.gradient }
-							}
 						>
+							<img
+								src={visual.imageUrl}
+								alt={recipe.name}
+								onError={(event) => {
+									event.currentTarget.src = RECIPE_IMAGE_PLACEHOLDER;
+								}}
+							/>
 							<span className="recipe-details-page-tag">
 								{recipe.categories[0]?.name ?? "Recept"}
 							</span>
@@ -222,7 +225,27 @@ function RecipeDetails() {
 								) : null}
 							</div>
 
-						
+							<div className="recipe-details-page-meta">
+								<div className="recipe-details-page-meta-item recipe-details-page-meta-blue">
+									<span>Namirnice</span>
+									<strong>{recipe.ingredients.length}</strong>
+								</div>
+								<div className="recipe-details-page-meta-item recipe-details-page-meta-category">
+									<span>Kategorija</span>
+									<strong>{recipe.categories.length}</strong>
+									<small>{category}</small>
+								</div>
+								<div className="recipe-details-page-meta-item recipe-details-page-meta-yellow">
+									<span>Ocena</span>
+									<strong>
+										{ratingAggregate?.average ? `${ratingAggregate.average.toFixed(1)}/5` : "Nema"}
+									</strong>
+								</div>
+								<div className="recipe-details-page-meta-item recipe-details-page-meta-green">
+									<span>Cena</span>
+									<strong>{formatPrice(recipe.estimated_price)}</strong>
+								</div>
+							</div>
 						</div>
 					</article>
 
