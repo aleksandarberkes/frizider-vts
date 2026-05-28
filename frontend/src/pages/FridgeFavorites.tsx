@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { api, ApiError } from "../api";
+import { ApiError } from "../api";
 import EmptyState from "../components/feedback/EmptyState";
 import ErrorState from "../components/feedback/ErrorState";
 import LoadingState from "../components/feedback/LoadingState";
 import RecipeGrid from "../components/recipes/RecipeGrid/RecipeGrid";
 import {
-	FavoriteRecipe,
 	RatingAggregate,
 	Recipe,
 } from "../components/recipes/types";
+import { favoritesApi } from "../services/favoritesApi";
+import { ratingsApi } from "../services/ratingsApi";
+import { recipesApi } from "../services/recipesApi";
 
 function FridgeFavorites() {
 	const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -27,8 +29,8 @@ function FridgeFavorites() {
 
 			try {
 				const [recipesResponse, favoritesResponse] = await Promise.all([
-					api.get<Recipe[]>("/api/recipes"),
-					api.get<FavoriteRecipe[]>("/api/favorites"),
+					recipesApi.list(),
+					favoritesApi.list(),
 				]);
 				const nextFavoriteIds = favoritesResponse.map((entry) =>
 					Number(entry.recipe_id),
@@ -39,7 +41,7 @@ function FridgeFavorites() {
 				);
 				const ratingResponses = await Promise.all(
 					favoriteRecipes.map((recipe) =>
-						api.get<RatingAggregate>(`/api/ratings/recipe/${recipe.id}`),
+						ratingsApi.getRecipeAggregate(recipe.id),
 					),
 				);
 				const nextRatingSummary = ratingResponses.reduce<
@@ -78,7 +80,7 @@ function FridgeFavorites() {
 
 		try {
 			if (favoriteSet.has(recipeId)) {
-				await api.delete<{ ok: boolean }>(`/api/favorites/${recipeId}`);
+				await favoritesApi.remove(recipeId);
 				setFavoriteIds((current) => current.filter((id) => id !== recipeId));
 				setRatingSummary((current) => {
 					const next = { ...current };
@@ -89,7 +91,7 @@ function FridgeFavorites() {
 					current.filter((recipe) => recipe.id !== recipeId),
 				);
 			} else {
-				await api.post("/api/favorites", { recipe_id: recipeId });
+				await favoritesApi.add(recipeId);
 				setFavoriteIds((current) => [...current, recipeId]);
 			}
 		} catch (err) {

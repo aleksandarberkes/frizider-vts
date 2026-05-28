@@ -1,5 +1,3 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { api, ApiError } from '../../api';
 import { useAuth } from '../../auth/AuthContext';
 import { useAuthModal } from '../../auth/AuthModalContext';
 import RecipeFormModal from '../../components/recipes/RecipeFormModal/RecipeFormModal';
@@ -7,459 +5,91 @@ import RecipeGrid from '../../components/recipes/RecipeGrid/RecipeGrid';
 import RecipesFilters from '../../components/recipes/RecipesFilters/RecipesFilters';
 import RecipesHero from '../../components/recipes/RecipesHero/RecipesHero';
 import RecipesToolbar from '../../components/recipes/RecipesToolbar/RecipesToolbar';
-import {
-  Category,
-  FavoriteRecipe,
-  IngredientOption,
-  PriceFilter,
-  RatingAggregate,
-  RatingFilter,
-  Recipe,
-  RecipeFormIngredient,
-  RecipeFormState,
-  SortBy,
-} from '../../components/recipes/types';
-import {
-  emptyRecipeForm,
-  emptyRecipeIngredientRow,
-  findIngredientByName,
-} from '../../components/recipes/utils';
+import { useRecipeFavorites } from '../../components/recipes/hooks/useRecipeFavorites';
+import { useRecipeFilters } from '../../components/recipes/hooks/useRecipeFilters';
+import { useRecipeForm } from '../../components/recipes/hooks/useRecipeForm';
+import { useRecipesPageData } from '../../components/recipes/hooks/useRecipesPageData';
+import { RecipePayload, recipesApi } from '../../services/recipesApi';
 import './Recepti.css';
 
 function Recepti() {
   const { user } = useAuth();
   const { openLoginModal } = useAuthModal();
-
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [ingredientsCatalog, setIngredientsCatalog] = useState<IngredientOption[]>([]);
-  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
-  const [ratingSummary, setRatingSummary] = useState<Record<number, RatingAggregate>>({});
-  const [loading, setLoading] = useState(true);
-  const [pageError, setPageError] = useState<string | null>(null);
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | 'all'>('all');
-  const [priceFilter, setPriceFilter] = useState<PriceFilter>('all');
-  const [ratingFilter, setRatingFilter] = useState<RatingFilter>('all');
-  const [sortBy, setSortBy] = useState<SortBy>('popular');
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
-
-  const [showRecipeForm, setShowRecipeForm] = useState(false);
-  const [editingRecipeId, setEditingRecipeId] = useState<number | null>(null);
-  const [recipeForm, setRecipeForm] = useState<RecipeFormState>(emptyRecipeForm);
-  const [recipeFormError, setRecipeFormError] = useState<string | null>(null);
-  const [recipeFormSaving, setRecipeFormSaving] = useState(false);
-  const [favoriteBusyId, setFavoriteBusyId] = useState<number | null>(null);
-  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState('');
-
-  const mapError = (err: unknown, fallback: string) => {
-    if (err instanceof TypeError) {
-      return 'Backend nije dostupan na http://localhost/frizider-vts/backend.';
-    }
-    if (err instanceof ApiError || err instanceof Error) {
-      return err.message;
-    }
-    return fallback;
-  };
-
-  const favoriteSet = useMemo(() => new Set(favoriteIds), [favoriteIds]);
-
-  const normalizeText = (value: string) =>
-    value
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .trim()
-      .toLowerCase();
-
-  const loadPageData = async () => {
-    setLoading(true);
-    setPageError(null);
-
-    try {
-      const [recipesResponse, categoriesResponse, ingredientsResponse] = await Promise.all([
-        api.get<Recipe[]>('/api/recipes'),
-        api.get<Category[]>('/api/categories'),
-        api.get<IngredientOption[]>('/api/ingredients'),
-      ]);
-
-      let favoritesResponse: FavoriteRecipe[] = [];
-      if (user) {
-        favoritesResponse = await api.get<FavoriteRecipe[]>('/api/favorites');
-      }
-
-      const ratingEntries = await Promise.all(
-        recipesResponse.map(async (recipe) => {
-          const aggregate = await api.get<RatingAggregate>(`/api/ratings/recipe/${recipe.id}`);
-          return [recipe.id, aggregate] as const;
-        }),
-      );
-
-      setRecipes(recipesResponse);
-      setCategories(categoriesResponse);
-      setIngredientsCatalog(ingredientsResponse);
-      setFavoriteIds(favoritesResponse.map((entry) => entry.recipe_id));
-      setRatingSummary(
-        ratingEntries.reduce<Record<number, RatingAggregate>>((acc, [recipeId, aggregate]) => {
-          acc[recipeId] = aggregate;
-          return acc;
-        }, {}),
-      );
-    } catch (err) {
-      setPageError(mapError(err, 'Ucitavanje recepata nije uspelo.'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadPageData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
-
-  useEffect(() => {
-    if (!selectedImageFile) {
-      setImagePreviewUrl(recipeForm.image_path.trim());
-      return;
-    }
-
-    const objectUrl = URL.createObjectURL(selectedImageFile);
-    setImagePreviewUrl(objectUrl);
-
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [selectedImageFile, recipeForm.image_path]);
-
-  const filteredRecipes = recipes
-    .filter((recipe) => {
-      const haystack = `${recipe.name} ${recipe.description ?? ''}`.toLowerCase();
-      const query = searchTerm.trim().toLowerCase();
-
-      if (query && !haystack.includes(query)) {
-        return false;
-      }
-
-      if (selectedCategoryId !== 'all') {
-        const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
-        const selectedCategoryName = selectedCategory ? normalizeText(selectedCategory.name) : '';
-
-        const hasSelectedCategory = recipe.categories.some((category) => {
-          const categoryId =
-            typeof category.category_id === 'number'
-              ? category.category_id
-              : typeof category.id === 'number'
-                ? category.id
-                : null;
-
-          if (categoryId === selectedCategoryId) {
-            return true;
-          }
-
-          return selectedCategoryName !== '' && normalizeText(category.name) === selectedCategoryName;
-        });
-
-        if (!hasSelectedCategory) {
-          return false;
-        }
-      }
-
-      if (favoritesOnly && !favoriteSet.has(recipe.id)) {
-        return false;
-      }
-
-      if (priceFilter === 'budget' && (recipe.estimated_price ?? Number.MAX_SAFE_INTEGER) > 400) {
-        return false;
-      }
-
-      if (
-        priceFilter === 'mid' &&
-        ((recipe.estimated_price ?? 0) < 401 || (recipe.estimated_price ?? 0) > 800)
-      ) {
-        return false;
-      }
-
-      if (priceFilter === 'premium' && (recipe.estimated_price ?? 0) < 801) {
-        return false;
-      }
-
-      const average = ratingSummary[recipe.id]?.average ?? 0;
-      if (ratingFilter === '4plus' && average < 4) {
-        return false;
-      }
-      if (ratingFilter === '45plus' && average < 4.5) {
-        return false;
-      }
-
-      return true;
-    })
-    .sort((left, right) => {
-      if (sortBy === 'name') {
-        return left.name.localeCompare(right.name, 'sr');
-      }
-      if (sortBy === 'priceAsc') {
-        return (
-          (left.estimated_price ?? Number.MAX_SAFE_INTEGER) -
-          (right.estimated_price ?? Number.MAX_SAFE_INTEGER)
-        );
-      }
-      if (sortBy === 'priceDesc') {
-        return (right.estimated_price ?? 0) - (left.estimated_price ?? 0);
-      }
-      if (sortBy === 'newest') {
-        return new Date(right.created_at).getTime() - new Date(left.created_at).getTime();
-      }
-
-      const rightRating = ratingSummary[right.id]?.average ?? 0;
-      const leftRating = ratingSummary[left.id]?.average ?? 0;
-      if (rightRating !== leftRating) {
-        return rightRating - leftRating;
-      }
-      return right.id - left.id;
-    });
-
-  const resetFilters = () => {
-    setSearchTerm('');
-    setSelectedCategoryId('all');
-    setPriceFilter('all');
-    setRatingFilter('all');
-    setSortBy('popular');
-    setFavoritesOnly(false);
-  };
+  const {
+    recipes,
+    categories,
+    ingredientsCatalog,
+    favoriteIds,
+    ratingSummary,
+    loading,
+    pageError,
+    setIngredientsCatalog,
+    setFavoriteIds,
+    setPageError,
+    loadPageData,
+  } = useRecipesPageData(user?.id);
 
   const promptLogin = () => {
     openLoginModal();
   };
 
-  const toggleFavorite = async (recipeId: number) => {
-    if (!user) {
-      promptLogin();
+  const { favoriteSet, favoriteBusyId, toggleFavorite } = useRecipeFavorites({
+    favoriteIds,
+    setFavoriteIds,
+    isLoggedIn: !!user,
+    onLoginRequired: promptLogin,
+    onError: setPageError,
+  });
+
+  const {
+    searchTerm,
+    selectedCategoryId,
+    priceFilter,
+    ratingFilter,
+    sortBy,
+    favoritesOnly,
+    filteredRecipes,
+    setSearchTerm,
+    setSelectedCategoryId,
+    setPriceFilter,
+    setRatingFilter,
+    setSortBy,
+    setFavoritesOnly,
+    resetFilters,
+  } = useRecipeFilters({
+    recipes,
+    categories,
+    favoriteIds: favoriteSet,
+    ratingSummary,
+  });
+
+  const saveRecipe = async (payload: RecipePayload, editingRecipeId: number | null) => {
+    if (editingRecipeId) {
+      await recipesApi.update(editingRecipeId, payload);
       return;
     }
 
-    setFavoriteBusyId(recipeId);
-    try {
-      if (favoriteSet.has(recipeId)) {
-        await api.delete<{ ok: boolean }>(`/api/favorites/${recipeId}`);
-        setFavoriteIds((current) => current.filter((id) => id !== recipeId));
-      } else {
-        await api.post('/api/favorites', { recipe_id: recipeId });
-        setFavoriteIds((current) => [...current, recipeId]);
-      }
-    } catch (err) {
-      setPageError(mapError(err, 'Izmena omiljenih recepata nije uspela.'));
-    } finally {
-      setFavoriteBusyId(null);
-    }
+    await recipesApi.create(payload);
   };
 
-  const openCreateRecipeForm = () => {
-    if (!user) {
-      promptLogin();
-      return;
-    }
-
-    setEditingRecipeId(null);
-    setRecipeForm(emptyRecipeForm());
-    setSelectedImageFile(null);
-    setImagePreviewUrl('');
-    setRecipeFormError(null);
-    setShowRecipeForm(true);
-  };
-
-  const closeRecipeForm = () => {
-    setShowRecipeForm(false);
-    setEditingRecipeId(null);
-    setSelectedImageFile(null);
-    setImagePreviewUrl('');
-    setRecipeFormError(null);
-  };
-
-  const updateRecipeFormField = (field: keyof RecipeFormState, value: string | number[]) => {
-    if (field === 'image_path' && selectedImageFile) {
-      setSelectedImageFile(null);
-    }
-    setRecipeForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
-  };
-
-  const updateRecipeImageFile = (file: File | null) => {
-    if (!file) {
-      setSelectedImageFile(null);
-      return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-      setRecipeFormError('Mozes da dodas samo sliku za recept.');
-      return;
-    }
-
-    setRecipeFormError(null);
-    setRecipeForm((current) => ({
-      ...current,
-      image_path: '',
-    }));
-    setSelectedImageFile(file);
-  };
-
-  const handleIngredientRowChange = (
-    index: number,
-    field: keyof RecipeFormIngredient,
-    value: string,
-  ) => {
-    const nextRows = recipeForm.ingredients.map((row, rowIndex) => {
-      if (rowIndex !== index) {
-        return row;
-      }
-
-      const nextRow = { ...row, [field]: value };
-      if (field === 'ingredient_name') {
-        const matchedIngredient = findIngredientByName(ingredientsCatalog, value);
-        nextRow.ingredient_id = matchedIngredient ? matchedIngredient.id.toString() : '';
-        if (matchedIngredient && nextRow.unit.trim() === '') {
-          nextRow.unit = matchedIngredient.unit;
-        }
-      }
-
-      return nextRow;
-    });
-    setRecipeForm((current) => ({
-      ...current,
-      ingredients: nextRows,
-    }));
-  };
-
-  const addIngredientRow = () => {
-    setRecipeForm((current) => ({
-      ...current,
-      ingredients: [...current.ingredients, emptyRecipeIngredientRow()],
-    }));
-  };
-
-  const removeIngredientRow = (index: number) => {
-    const nextRows = recipeForm.ingredients.filter((_, rowIndex) => rowIndex !== index);
-    setRecipeForm((current) => ({
-      ...current,
-      ingredients: nextRows.length > 0 ? nextRows : [emptyRecipeIngredientRow()],
-    }));
-  };
-
-  const toggleFormCategory = (categoryId: number) => {
-    const hasCategory = recipeForm.categories.includes(categoryId);
-    setRecipeForm((current) => ({
-      ...current,
-      categories: hasCategory
-        ? current.categories.filter((id) => id !== categoryId)
-        : [...current.categories, categoryId],
-    }));
-  };
-
-  const submitRecipeForm = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!user) {
-      promptLogin();
-      return;
-    }
-
-    const ingredientRows = recipeForm.ingredients.filter(
-      (row) => row.ingredient_name.trim() !== '' || row.quantity.trim() !== '' || row.unit.trim() !== '',
-    );
-
-    if (ingredientRows.length === 0) {
-      setRecipeFormError('Dodaj barem jednu namirnicu za recept.');
-      return;
-    }
-
-    setRecipeFormSaving(true);
-    setRecipeFormError(null);
-
-    try {
-      const createdIngredients: IngredientOption[] = [];
-      const cleanedIngredients = [];
-
-      for (const row of ingredientRows) {
-        const ingredientName = row.ingredient_name.trim();
-        const unit = row.unit.trim();
-
-        if (ingredientName === '') {
-          setRecipeFormError('Svaka namirnica mora da ima naziv.');
-          return;
-        }
-
-        if (unit === '') {
-          setRecipeFormError(`Unesi jedinicu mere za "${ingredientName}".`);
-          return;
-        }
-
-        const matchedIngredient = findIngredientByName(
-          [...ingredientsCatalog, ...createdIngredients],
-          ingredientName,
-        );
-
-        let ingredientId: number;
-        if (matchedIngredient) {
-          ingredientId = matchedIngredient.id;
-        } else {
-          const createdIngredient = await api.post<IngredientOption>('/api/ingredients', {
-            name: ingredientName,
-            unit,
-          });
-          createdIngredients.push(createdIngredient);
-          ingredientId = createdIngredient.id;
-        }
-
-        cleanedIngredients.push({
-          ingredient_id: ingredientId,
-          quantity: row.quantity.trim() === '' ? null : Number(row.quantity),
-        });
-      }
-
-      let imagePath = recipeForm.image_path.trim();
-      if (selectedImageFile) {
-        const formData = new FormData();
-        formData.append('image', selectedImageFile);
-        const uploadResponse = await api.upload<{ path: string }>('/api/uploads', formData);
-        imagePath = uploadResponse.path;
-      }
-
-      const payload = {
-        name: recipeForm.name.trim(),
-        description: recipeForm.description.trim(),
-        image_path: imagePath,
-        estimated_price:
-          recipeForm.estimated_price.trim() === '' ? null : Number(recipeForm.estimated_price),
-        ingredients: cleanedIngredients,
-        categories: recipeForm.categories,
-      };
-
-      if (editingRecipeId) {
-        await api.put<Recipe>(`/api/recipes/${editingRecipeId}`, payload);
-      } else {
-        await api.post<Recipe>('/api/recipes', payload);
-      }
-
-      if (createdIngredients.length > 0) {
-        setIngredientsCatalog((current) =>
-          [...current, ...createdIngredients].sort((left, right) => left.name.localeCompare(right.name, 'sr')),
-        );
-      }
-
-      closeRecipeForm();
-      await loadPageData();
-    } catch (err) {
-      setRecipeFormError(mapError(err, 'Cuvanje recepta nije uspelo.'));
-    } finally {
-      setRecipeFormSaving(false);
-    }
-  };
+  const recipeForm = useRecipeForm({
+    user,
+    ingredientsCatalog,
+    onIngredientsCreated: (createdIngredients) => {
+      setIngredientsCatalog((current) =>
+        [...current, ...createdIngredients].sort((left, right) =>
+          left.name.localeCompare(right.name, 'sr'),
+        ),
+      );
+    },
+    onSaved: loadPageData,
+    onLoginRequired: promptLogin,
+    saveRecipe,
+  });
 
   return (
     <section className="recipes-page">
-      <RecipesHero onCreateRecipe={openCreateRecipeForm} />
+      <RecipesHero onCreateRecipe={recipeForm.openCreateRecipeForm} />
 
       <RecipesFilters
         categories={categories}
@@ -501,23 +131,23 @@ function Recepti() {
       ) : null}
 
       <RecipeFormModal
-        isOpen={showRecipeForm}
-        editingRecipeId={editingRecipeId}
-        recipeForm={recipeForm}
+        isOpen={recipeForm.showRecipeForm}
+        editingRecipeId={recipeForm.editingRecipeId}
+        recipeForm={recipeForm.recipeForm}
         categories={categories}
         ingredientsCatalog={ingredientsCatalog}
-        recipeFormError={recipeFormError}
-        recipeFormSaving={recipeFormSaving}
-        imagePreviewUrl={imagePreviewUrl}
-        hasSelectedImage={!!selectedImageFile || recipeForm.image_path.trim() !== ''}
-        onClose={closeRecipeForm}
-        onSubmit={submitRecipeForm}
-        onFieldChange={updateRecipeFormField}
-        onImageFileChange={updateRecipeImageFile}
-        onIngredientRowChange={handleIngredientRowChange}
-        onAddIngredientRow={addIngredientRow}
-        onRemoveIngredientRow={removeIngredientRow}
-        onToggleCategory={toggleFormCategory}
+        recipeFormError={recipeForm.recipeFormError}
+        recipeFormSaving={recipeForm.recipeFormSaving}
+        imagePreviewUrl={recipeForm.imagePreviewUrl}
+        hasSelectedImage={recipeForm.hasSelectedImage}
+        onClose={recipeForm.closeRecipeForm}
+        onSubmit={recipeForm.submitRecipeForm}
+        onFieldChange={recipeForm.updateRecipeFormField}
+        onImageFileChange={recipeForm.updateRecipeImageFile}
+        onIngredientRowChange={recipeForm.handleIngredientRowChange}
+        onAddIngredientRow={recipeForm.addIngredientRow}
+        onRemoveIngredientRow={recipeForm.removeIngredientRow}
+        onToggleCategory={recipeForm.toggleFormCategory}
       />
     </section>
   );

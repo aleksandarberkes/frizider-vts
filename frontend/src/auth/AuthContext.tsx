@@ -6,9 +6,10 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { api, ApiError } from '../api';
+import { ApiError } from '../api';
 import { User } from './types';
 import { useNavigate } from 'react-router-dom';
+import { authApi } from '../services/authApi';
 
 type AuthState = {
   user: User | null;
@@ -29,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const currentUser = await api.get<User>('/api/auth/me');
+      const currentUser = await authApi.me();
       setUser(currentUser);
       setError(null);
     } catch (err) {
@@ -53,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      const currentUser = await api.post<User>('/api/auth/login', { email, password });
+      const currentUser = await authApi.login(email, password);
       setUser(currentUser);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
@@ -64,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await api.post('/api/auth/logout');
+      await authApi.logout();
     } finally {
       setUser(null);
       setError(null);
