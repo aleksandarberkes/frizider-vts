@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '../../../api';
 import { Recipe } from '../../recipes/types';
+import { recipesApi } from '../../../services/recipesApi';
 import { mapAdminError } from './mapAdminError';
 
 function useAdminRecipes() {
@@ -13,7 +13,7 @@ function useAdminRecipes() {
     setLoadingRecipes(true);
 
     try {
-      const recipes = await api.get<Recipe[]>('/api/recipes');
+      const recipes = await recipesApi.list();
       setPendingRecipes(recipes.filter((recipe) => !recipe.is_approved));
       setRecipesError(null);
     } catch (err) {
@@ -32,7 +32,7 @@ function useAdminRecipes() {
     setRecipesError(null);
 
     try {
-      await api.put<Recipe>(`/api/recipes/${recipe.id}`, {
+      await recipesApi.update(recipe.id, {
         name: recipe.name,
         description: recipe.description ?? '',
         image_path: recipe.image_path ?? '',

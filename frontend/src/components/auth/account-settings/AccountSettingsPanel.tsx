@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
-import { api, ApiError } from '../../../api';
+import { ApiError } from '../../../api';
+import { usersApi } from '../../../services/usersApi';
 import '../user-profile/userProfilePanel.css';
 
 function AccountSettingsPanel() {
@@ -33,7 +34,7 @@ function AccountSettingsPanel() {
     setSavingPassword(true);
 
     try {
-      await api.post('/api/users/me/password', {
+      await usersApi.changePassword({
         current_password: currentPassword,
         new_password: newPassword,
       });

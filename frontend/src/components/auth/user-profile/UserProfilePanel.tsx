@@ -1,18 +1,8 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { api, ApiError } from '../../../api';
+import { ApiError } from '../../../api';
 import { useAuth } from '../../../auth/AuthContext';
+import { usersApi } from '../../../services/usersApi';
 import './userProfilePanel.css';
-
-type ProfileResponse = {
-  id: number;
-  email: string;
-  first_name: string | null;
-  last_name: string | null;
-  phone: string | null;
-  role_id: number;
-  role_name: 'admin' | 'user';
-  is_active: boolean;
-};
 
 function UserProfilePanel() {
   const { user, refresh } = useAuth();
@@ -50,7 +40,7 @@ function UserProfilePanel() {
     setSavingProfile(true);
 
     try {
-      await api.put<ProfileResponse>('/api/users/me', {
+      await usersApi.updateMe({
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         phone: phone.trim(),

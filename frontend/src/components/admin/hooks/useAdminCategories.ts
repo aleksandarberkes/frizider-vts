@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { api } from '../../../api';
 import { Category } from '../../recipes/types';
+import { categoriesApi } from '../../../services/categoriesApi';
 import { mapAdminError } from './mapAdminError';
 
 function useAdminCategories() {
@@ -16,7 +16,7 @@ function useAdminCategories() {
     setLoadingCategories(true);
 
     try {
-      const categoriesResponse = await api.get<Category[]>('/api/categories');
+      const categoriesResponse = await categoriesApi.list();
       setCategories(categoriesResponse);
       setCategoriesError(null);
     } catch (err) {
@@ -50,16 +50,14 @@ function useAdminCategories() {
 
       try {
         if (editingCategoryId) {
-          const updatedCategory = await api.put<Category>(`/api/categories/${editingCategoryId}`, {
-            name: trimmedName,
-          });
+          const updatedCategory = await categoriesApi.update(editingCategoryId, trimmedName);
           setCategories((current) =>
             current
               .map((category) => (category.id === editingCategoryId ? updatedCategory : category))
               .sort((left, right) => left.name.localeCompare(right.name, 'sr')),
           );
         } else {
-          const createdCategory = await api.post<Category>('/api/categories', { name: trimmedName });
+          const createdCategory = await categoriesApi.create(trimmedName);
           setCategories((current) =>
             [...current, createdCategory].sort((left, right) => left.name.localeCompare(right.name, 'sr')),
           );
@@ -92,7 +90,7 @@ function useAdminCategories() {
       setCategoriesError(null);
 
       try {
-        await api.delete<{ ok: boolean }>(`/api/categories/${categoryId}`);
+        await categoriesApi.delete(categoryId);
         setCategories((current) => current.filter((category) => category.id !== categoryId));
 
         if (editingCategoryId === categoryId) {

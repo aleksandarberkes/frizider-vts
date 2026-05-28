@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { api } from '../../../api';
 import { RecipeComment } from '../../recipes/types';
+import { commentsApi } from '../../../services/commentsApi';
 import { mapAdminError } from './mapAdminError';
 
 function useAdminComments() {
@@ -13,7 +13,7 @@ function useAdminComments() {
     setLoadingComments(true);
 
     try {
-      const commentsResponse = await api.get<RecipeComment[]>('/api/comments');
+      const commentsResponse = await commentsApi.list();
       setComments(commentsResponse);
       setCommentsError(null);
     } catch (err) {
@@ -32,10 +32,7 @@ function useAdminComments() {
     setCommentsError(null);
 
     try {
-      const updatedComment = await api.put<RecipeComment>(`/api/comments/${comment.id}`, {
-        content: comment.content,
-        is_approved: isApproved,
-      });
+      const updatedComment = await commentsApi.updateStatus(comment, isApproved);
       setComments((current) =>
         current.map((entry) =>
           entry.id === comment.id ? { ...entry, is_approved: updatedComment.is_approved } : entry,
@@ -53,7 +50,7 @@ function useAdminComments() {
     setCommentsError(null);
 
     try {
-      await api.delete<{ ok: boolean }>(`/api/comments/${commentId}`);
+      await commentsApi.delete(commentId);
       setComments((current) => current.filter((comment) => comment.id !== commentId));
     } catch (err) {
       setCommentsError(mapAdminError(err, 'Brisanje komentara nije uspelo.'));

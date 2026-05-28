@@ -1,8 +1,9 @@
 import "./registerForm.css";
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, ApiError } from "../../../api";
+import { ApiError } from "../../../api";
 import { useAuth } from "../../../auth/AuthContext";
+import { authApi } from "../../../services/authApi";
 
 const RegisterForm = () => {
 	const navigate = useNavigate();
@@ -29,7 +30,7 @@ const RegisterForm = () => {
 		setSubmitting(true);
 
 		try {
-			await api.post("/api/auth/register", {
+			await authApi.register({
 				email,
 				password,
 				first_name: firstName.trim(),
