@@ -1,0 +1,174 @@
+.weekly-plan-page {
+  display: grid;
+  gap: 18px;
+}
+
+.weekly-plan-header {
+  background: #ffffff;
+  border: 1px solid #ded8d1;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.weekly-plan-header h2,
+.weekly-plan-card h3 {
+  color: #1f1f1f;
+  margin: 0;
+}
+
+.weekly-plan-header p {
+  color: #667085;
+  margin: 6px 0 0;
+}
+
+.weekly-plan-layout {
+  display: grid;
+  gap: 18px;
+}
+
+.weekly-plan-card {
+  background: #ffffff;
+  border: 1px solid #ded8d1;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.weekly-plan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.weekly-plan-button {
+  background: #00b85a;
+  border: 0;
+  border-radius: 10px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0 16px;
+}
+
+.weekly-plan-button.secondary {
+  background: #f2f4f7;
+  color: #344054;
+}
+
+.weekly-plan-button.danger {
+  background: #d92d20;
+}
+
+.weekly-plan-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.weekly-plan-menu-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.weekly-plan-menu-list button {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 12px;
+  text-align: left;
+}
+
+.weekly-plan-menu-list button.active,
+.weekly-plan-menu-list button:hover {
+  border-color: #00b85a;
+}
+
+.weekly-plan-menu-list strong,
+.weekly-plan-menu-list span {
+  display: block;
+}
+
+.weekly-plan-menu-list span {
+  color: #667085;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.weekly-plan-days {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.weekly-plan-day {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.weekly-plan-day h4 {
+  color: #00a651;
+  margin: 0 0 8px;
+}
+
+.weekly-plan-day ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.weekly-plan-empty {
+  color: #667085;
+  margin: 0;
+}
+
+.weekly-plan-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.weekly-plan-field {
+  display: grid;
+  gap: 6px;
+}
+
+.weekly-plan-field span {
+  color: #344054;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.weekly-plan-field input,
+.weekly-plan-field select {
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.weekly-plan-form-row {
+  display: grid;
+  gap: 10px;
+}
+
+.weekly-plan-message {
+  color: #667085;
+  margin: 0;
+}
+
+.weekly-plan-error {
+  color: #d92d20;
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .weekly-plan-layout {
+    grid-template-columns: 300px 1fr;
+  }
+
+  .weekly-plan-form-row {
+    grid-template-columns: 180px 1fr auto;
+  }
+}
