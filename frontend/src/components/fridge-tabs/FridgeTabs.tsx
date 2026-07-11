@@ -5,6 +5,14 @@ function FridgeTabs() {
   return (
     <nav className="fridge-tabs" aria-label="Moj frizider sekcije">
       <NavLink
+        to="/fridge/search"
+        className={({ isActive }) =>
+          isActive ? 'fridge-tab fridge-tab-active' : 'fridge-tab'
+        }
+      >
+        Moj frizider
+      </NavLink>
+      <NavLink
         to="/fridge/favorites"
         className={({ isActive }) =>
           isActive ? 'fridge-tab fridge-tab-active' : 'fridge-tab'

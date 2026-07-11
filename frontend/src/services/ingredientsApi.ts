@@ -8,4 +8,7 @@ export const ingredientsApi = {
       name,
       unit,
     }),
+  update: (id: number, name: string, unit: string) =>
+    api.put<IngredientOption>(`/api/ingredients/${id}`, { name, unit }),
+  remove: (id: number) => api.delete<{ ok: boolean }>(`/api/ingredients/${id}`),
 };

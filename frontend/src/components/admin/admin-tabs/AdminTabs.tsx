@@ -1,6 +1,6 @@
 import './adminTabs.css';
 
-export type AdminTabId = 'categories' | 'recipes' | 'comments';
+export type AdminTabId = 'categories' | 'ingredients' | 'recipes' | 'comments' | 'users';
 
 type AdminTabsProps = {
   activeTab: AdminTabId;
@@ -9,8 +9,10 @@ type AdminTabsProps = {
 
 const tabs: Array<{ id: AdminTabId; label: string }> = [
   { id: 'categories', label: 'Kategorije' },
+  { id: 'ingredients', label: 'Namirnice' },
   { id: 'recipes', label: 'Recepti' },
   { id: 'comments', label: 'Komentari' },
+  { id: 'users', label: 'Korisnici' },
 ];
 
 function AdminTabs({ activeTab, onTabChange }: AdminTabsProps) {

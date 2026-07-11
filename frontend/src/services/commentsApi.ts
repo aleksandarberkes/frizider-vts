@@ -10,10 +10,12 @@ export const commentsApi = {
       recipe_id: recipeId,
       content,
     }),
-  updateStatus: (comment: RecipeComment, isApproved: boolean) =>
+  updateStatus: (comment: RecipeComment, isApproved: boolean, rejectionReason?: string) =>
     api.put<RecipeComment>(`/api/comments/${comment.id}`, {
       content: comment.content,
       is_approved: isApproved,
+      // Only meaningful on rejection; the author is e-mailed the reason.
+      rejection_reason: rejectionReason,
     }),
   delete: (commentId: number) => api.delete<{ ok: boolean }>(`/api/comments/${commentId}`),
 };

@@ -3,74 +3,15 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/util.php';
 require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../config/recipe_shape.php';
+require_once __DIR__ . '/../config/mail.php';
+require_once __DIR__ . '/../config/Mailer.php';
 
 $id = intSegment($segments, 2);
 
 // ----- helpers --------------------------------------------------------------
-
-function loadIngredientsForRecipes(PDO $pdo, array $recipeIds): array
-{
-    if (empty($recipeIds)) {
-        return [];
-    }
-    $placeholders = implode(',', array_fill(0, count($recipeIds), '?'));
-    $sql = "SELECT ri.recipe_id, ri.ingredient_id, ri.quantity, i.name, i.unit
-            FROM recipe_ingredients ri
-            JOIN ingredients i ON i.id = ri.ingredient_id
-            WHERE ri.recipe_id IN ($placeholders)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($recipeIds);
-
-    $byRecipe = [];
-    foreach ($stmt->fetchAll() as $row) {
-        $byRecipe[$row['recipe_id']][] = [
-            'ingredient_id' => (int)$row['ingredient_id'],
-            'name'          => $row['name'],
-            'unit'          => $row['unit'],
-            'quantity'      => $row['quantity'] !== null ? (float)$row['quantity'] : null,
-        ];
-    }
-    return $byRecipe;
-}
-
-function loadCategoriesForRecipes(PDO $pdo, array $recipeIds): array
-{
-    if (empty($recipeIds)) {
-        return [];
-    }
-    $placeholders = implode(',', array_fill(0, count($recipeIds), '?'));
-    $sql = "SELECT rc.recipe_id, rc.category_id, c.name
-            FROM recipe_categories rc
-            JOIN categories c ON c.id = rc.category_id
-            WHERE rc.recipe_id IN ($placeholders)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($recipeIds);
-
-    $byRecipe = [];
-    foreach ($stmt->fetchAll() as $row) {
-        $byRecipe[$row['recipe_id']][] = [
-            'category_id' => (int)$row['category_id'],
-            'name'        => $row['name'],
-        ];
-    }
-    return $byRecipe;
-}
-
-function shapeRecipe(array $row, array $ingredients, array $categories): array
-{
-    return [
-        'id'              => (int)$row['id'],
-        'name'            => $row['name'],
-        'description'     => $row['description'],
-        'image_path'      => $row['image_path'],
-        'estimated_price' => $row['estimated_price'] !== null ? (float)$row['estimated_price'] : null,
-        'created_by'      => (int)$row['created_by'],
-        'is_approved'     => (bool)$row['is_approved'],
-        'created_at'      => $row['created_at'],
-        'ingredients'     => $ingredients[$row['id']] ?? [],
-        'categories'      => $categories[$row['id']] ?? [],
-    ];
-}
+// loadIngredientsForRecipes(), loadCategoriesForRecipes() and shapeRecipe()
+// live in config/recipe_shape.php so api/fridge.php can reuse them.
 
 function replaceRecipeIngredients(PDO $pdo, int $recipeId, array $ingredients): void
 {
@@ -167,7 +108,7 @@ if ($method === 'GET' && $id === null) {
     if ($isAdmin) {
         $stmt = $pdo->query(
             'SELECT id, name, description, image_path, estimated_price, created_by,
-                    is_approved, created_at
+                    is_approved, rejection_reason, created_at
              FROM recipes
              ORDER BY id'
         );
@@ -175,7 +116,7 @@ if ($method === 'GET' && $id === null) {
     } elseif ($caller) {
         $stmt = $pdo->prepare(
             'SELECT id, name, description, image_path, estimated_price, created_by,
-                    is_approved, created_at
+                    is_approved, rejection_reason, created_at
              FROM recipes
              WHERE is_approved = 1 OR created_by = :uid
              ORDER BY id'
@@ -185,7 +126,7 @@ if ($method === 'GET' && $id === null) {
     } else {
         $stmt = $pdo->query(
             'SELECT id, name, description, image_path, estimated_price, created_by,
-                    is_approved, created_at
+                    is_approved, rejection_reason, created_at
              FROM recipes
              WHERE is_approved = 1
              ORDER BY id'
@@ -213,7 +154,7 @@ if ($method === 'GET' && $id !== null) {
     $pdo  = getConnection();
     $stmt = $pdo->prepare(
         'SELECT id, name, description, image_path, estimated_price, created_by,
-                is_approved, created_at
+                is_approved, rejection_reason, created_at
          FROM recipes WHERE id = :id'
     );
     $stmt->execute([':id' => $id]);
@@ -275,7 +216,7 @@ if ($method === 'POST' && $id === null) {
 
     $stmt = $pdo->prepare(
         'SELECT id, name, description, image_path, estimated_price, created_by,
-                is_approved, created_at
+                is_approved, rejection_reason, created_at
          FROM recipes WHERE id = :id'
     );
     $stmt->execute([':id' => $newId]);
@@ -294,7 +235,7 @@ if ($method === 'PUT' && $id !== null) {
     $isAdmin = ($caller['role_name'] ?? null) === 'admin';
 
     $pdo  = getConnection();
-    $stmt = $pdo->prepare('SELECT id, created_by, is_approved FROM recipes WHERE id = :id');
+    $stmt = $pdo->prepare('SELECT id, created_by, is_approved, rejection_reason FROM recipes WHERE id = :id');
     $stmt->execute([':id' => $id]);
     $existing = $stmt->fetch();
     if (!$existing) {
@@ -320,6 +261,22 @@ if ($method === 'PUT' && $id !== null) {
         ? ($body['is_approved'] ? 1 : 0)
         : (int)$existing['is_approved'];
 
+    // An admin can reject a recipe (is_approved -> 0) with a reason; the author
+    // is notified by e-mail. Detect the rejection transition here.
+    $rejectionReason = trim($body['rejection_reason'] ?? '');
+    $isRejection     = $isAdmin
+        && array_key_exists('is_approved', $body)
+        && $isApproved === 0
+        && $rejectionReason !== '';
+
+    // Persist the reason so it can be displayed later. Approving clears it;
+    // rejecting stores the new reason; other edits keep whatever is there.
+    if ($isAdmin && array_key_exists('is_approved', $body)) {
+        $rejectionValue = $isApproved === 1 ? null : ($rejectionReason !== '' ? $rejectionReason : ($existing['rejection_reason'] ?? null));
+    } else {
+        $rejectionValue = $existing['rejection_reason'] ?? null;
+    }
+
     $ingredients = validateIngredientList($pdo, $body['ingredients'] ?? []);
     $categoryIds = validateCategoryList($pdo, $body['categories']  ?? []);
 
@@ -328,7 +285,7 @@ if ($method === 'PUT' && $id !== null) {
         $pdo->prepare(
             'UPDATE recipes
              SET name = :n, description = :d, image_path = :ip,
-                 estimated_price = :ep, is_approved = :ia
+                 estimated_price = :ep, is_approved = :ia, rejection_reason = :rr
              WHERE id = :id'
         )->execute([
             ':n'  => $name,
@@ -336,6 +293,7 @@ if ($method === 'PUT' && $id !== null) {
             ':ip' => $imagePath,
             ':ep' => $estimatedPrice,
             ':ia' => $isApproved,
+            ':rr' => $rejectionValue,
             ':id' => $id,
         ]);
         replaceRecipeIngredients($pdo, $id, $ingredients);
@@ -346,9 +304,28 @@ if ($method === 'PUT' && $id !== null) {
         throw $e;
     }
 
+    // Notify the author that their recipe was rejected (best-effort: never let
+    // a mail failure break the API response).
+    if ($isRejection) {
+        $authorStmt = $pdo->prepare(
+            'SELECT email, first_name FROM users WHERE id = :id'
+        );
+        $authorStmt->execute([':id' => $existing['created_by']]);
+        $author = $authorStmt->fetch();
+        if ($author) {
+            Mailer::sendRejection(
+                $author['email'],
+                (string)($author['first_name'] ?? ''),
+                'recept',
+                $name,
+                $rejectionReason
+            );
+        }
+    }
+
     $stmt = $pdo->prepare(
         'SELECT id, name, description, image_path, estimated_price, created_by,
-                is_approved, created_at
+                is_approved, rejection_reason, created_at
          FROM recipes WHERE id = :id'
     );
     $stmt->execute([':id' => $id]);

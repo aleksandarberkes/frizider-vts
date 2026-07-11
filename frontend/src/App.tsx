@@ -4,9 +4,13 @@ import Layout from './layout/Layout';
 import RequireAdmin from './components/auth/RequireAdmin';
 import RequireAuth from './components/auth/RequireAuth';
 import RequireGuest from './components/auth/RequireGuest';
+import Activate from './pages/Activate';
 import AdminDashboard from './pages/AdminDashboard';
 import AccountSettings from './pages/AccountSettings';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Fridge from './pages/fridge/Fridge';
+import FridgeSearch from './pages/fridge/FridgeSearch';
 import FridgeFavorites from './pages/FridgeFavorites';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -31,7 +35,8 @@ function App() {
             </RequireAuth>
           }
         >
-          <Route index element={<Navigate to="profile" replace />} />
+          <Route index element={<Navigate to="search" replace />} />
+          <Route path="search" element={<FridgeSearch />} />
           <Route path="favorites" element={<FridgeFavorites />} />
           <Route path="weekly-plan" element={<WeeklyPlan />} />
           <Route path="profile" element={<UserProfile />} />
@@ -61,6 +66,23 @@ function App() {
             </RequireGuest>
           }
         />
+        <Route
+          path="/forgot-password"
+          element={
+            <RequireGuest>
+              <ForgotPassword />
+            </RequireGuest>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <RequireGuest>
+              <ResetPassword />
+            </RequireGuest>
+          }
+        />
+        <Route path="/activate" element={<Activate />} />
       </Route>
     </Routes>
   );

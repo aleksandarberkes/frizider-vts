@@ -27,12 +27,16 @@ function useAdminComments() {
     void loadComments();
   }, [loadComments]);
 
-  const updateCommentStatus = useCallback(async (comment: RecipeComment, isApproved: boolean) => {
+  const updateCommentStatus = useCallback(async (
+    comment: RecipeComment,
+    isApproved: boolean,
+    rejectionReason?: string,
+  ) => {
     setCommentBusyId(comment.id);
     setCommentsError(null);
 
     try {
-      const updatedComment = await commentsApi.updateStatus(comment, isApproved);
+      const updatedComment = await commentsApi.updateStatus(comment, isApproved, rejectionReason);
       setComments((current) =>
         current.map((entry) =>
           entry.id === comment.id ? { ...entry, is_approved: updatedComment.is_approved } : entry,

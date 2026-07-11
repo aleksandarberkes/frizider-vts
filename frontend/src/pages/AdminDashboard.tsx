@@ -1,22 +1,33 @@
 import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import AdminCategoriesSection from '../components/admin/admin-categories/AdminCategoriesSection';
 import AdminCommentsSection from '../components/admin/admin-comments/AdminCommentsSection';
 import AdminDashboardHeader from '../components/admin/admin-header/AdminDashboardHeader';
+import AdminIngredientsSection from '../components/admin/admin-ingredients/AdminIngredientsSection';
 import AdminRecipesSection from '../components/admin/admin-recipes/AdminRecipesSection';
+import AdminUsersSection from '../components/admin/admin-users/AdminUsersSection';
 import AdminTabs, { AdminTabId } from '../components/admin/admin-tabs/AdminTabs';
 import ErrorState from '../components/feedback/ErrorState';
 import useAdminCategories from '../components/admin/hooks/useAdminCategories';
 import useAdminComments from '../components/admin/hooks/useAdminComments';
+import useAdminIngredients from '../components/admin/hooks/useAdminIngredients';
 import useAdminRecipes from '../components/admin/hooks/useAdminRecipes';
+import useAdminUsers from '../components/admin/hooks/useAdminUsers';
 import './AdminDashboard.css';
 
 const isAdminTab = (value: string | null): value is AdminTabId =>
-  value === 'categories' || value === 'recipes' || value === 'comments';
+  value === 'categories' ||
+  value === 'ingredients' ||
+  value === 'recipes' ||
+  value === 'comments' ||
+  value === 'users';
 
 function AdminDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { user } = useAuth();
   const tabParam = searchParams.get('tab');
   const activeTab: AdminTabId = isAdminTab(tabParam) ? tabParam : 'categories';
+
   const {
     categories,
     loadingCategories,
@@ -32,14 +43,36 @@ function AdminDashboard() {
     startEditCategory,
     deleteCategory,
   } = useAdminCategories();
+
   const {
-    pendingRecipes,
+    ingredients,
+    loadingIngredients,
+    ingredientsError,
+    ingredientName,
+    ingredientUnit,
+    editingIngredientId,
+    ingredientSubmitting,
+    ingredientDeletingId,
+    setIngredientName,
+    setIngredientUnit,
+    loadIngredients,
+    submitIngredient,
+    resetIngredientForm,
+    startEditIngredient,
+    deleteIngredient,
+  } = useAdminIngredients();
+
+  const {
+    recipes,
     loadingRecipes,
     recipesError,
-    approvingId,
-    loadPendingRecipes,
+    recipeBusyId,
+    loadRecipes,
     approveRecipe,
+    rejectRecipe,
+    deleteRecipe,
   } = useAdminRecipes();
+
   const {
     comments,
     loadingComments,
@@ -51,6 +84,17 @@ function AdminDashboard() {
     deleteComment,
   } = useAdminComments();
 
+  const {
+    users,
+    loadingUsers,
+    usersError,
+    userBusyId,
+    loadUsers,
+    toggleActive,
+    changeRole,
+    deleteUser,
+  } = useAdminUsers();
+
   const handleTabChange = (tab: AdminTabId) => {
     setSearchParams({ tab });
   };
@@ -58,45 +102,32 @@ function AdminDashboard() {
   const error =
     activeTab === 'categories'
       ? categoriesError
-      : activeTab === 'recipes'
-        ? recipesError
-        : commentsError;
+      : activeTab === 'ingredients'
+        ? ingredientsError
+        : activeTab === 'recipes'
+          ? recipesError
+          : activeTab === 'comments'
+            ? commentsError
+            : usersError;
+
+  const refreshConfig: Record<AdminTabId, { label: string; action: () => void; disabled: boolean }> = {
+    categories: { label: 'Osvezi kategorije', action: () => void loadCategories(), disabled: loadingCategories },
+    ingredients: { label: 'Osvezi namirnice', action: () => void loadIngredients(), disabled: loadingIngredients },
+    recipes: { label: 'Osvezi recepte', action: () => void loadRecipes(), disabled: loadingRecipes },
+    comments: { label: 'Osvezi komentare', action: () => void loadComments(), disabled: loadingComments },
+    users: { label: 'Osvezi korisnike', action: () => void loadUsers(), disabled: loadingUsers },
+  };
 
   const renderRefreshButton = () => {
-    if (activeTab === 'categories') {
-      return (
-        <button
-          type="button"
-          className="admin-dashboard-refresh"
-          onClick={() => void loadCategories()}
-          disabled={loadingCategories}
-        >
-          Osvezi kategorije
-        </button>
-      );
-    }
-
-    if (activeTab === 'recipes') {
-      return (
-        <button
-          type="button"
-          className="admin-dashboard-refresh"
-          onClick={() => void loadPendingRecipes()}
-          disabled={loadingRecipes}
-        >
-          Osvezi recepte
-        </button>
-      );
-    }
-
+    const config = refreshConfig[activeTab];
     return (
       <button
         type="button"
         className="admin-dashboard-refresh"
-        onClick={() => void loadComments()}
-        disabled={loadingComments}
+        onClick={config.action}
+        disabled={config.disabled}
       >
-        Osvezi komentare
+        {config.label}
       </button>
     );
   };
@@ -126,12 +157,32 @@ function AdminDashboard() {
           />
         ) : null}
 
+        {activeTab === 'ingredients' ? (
+          <AdminIngredientsSection
+            ingredients={ingredients}
+            loading={loadingIngredients}
+            ingredientName={ingredientName}
+            ingredientUnit={ingredientUnit}
+            editingIngredientId={editingIngredientId}
+            ingredientSubmitting={ingredientSubmitting}
+            ingredientDeletingId={ingredientDeletingId}
+            onNameChange={setIngredientName}
+            onUnitChange={setIngredientUnit}
+            onSubmit={submitIngredient}
+            onReset={resetIngredientForm}
+            onStartEdit={startEditIngredient}
+            onDelete={(ingredientId) => void deleteIngredient(ingredientId)}
+          />
+        ) : null}
+
         {activeTab === 'recipes' ? (
           <AdminRecipesSection
-            pendingRecipes={pendingRecipes}
+            recipes={recipes}
             loading={loadingRecipes}
-            approvingId={approvingId}
+            recipeBusyId={recipeBusyId}
             onApprove={(recipe) => void approveRecipe(recipe)}
+            onReject={(recipe, reason) => void rejectRecipe(recipe, reason)}
+            onDelete={(recipeId) => void deleteRecipe(recipeId)}
           />
         ) : null}
 
@@ -141,8 +192,22 @@ function AdminDashboard() {
             pendingCommentsCount={pendingComments.length}
             loading={loadingComments}
             commentBusyId={commentBusyId}
-            onUpdateStatus={(comment, isApproved) => void updateCommentStatus(comment, isApproved)}
+            onUpdateStatus={(comment, isApproved, rejectionReason) =>
+              void updateCommentStatus(comment, isApproved, rejectionReason)
+            }
             onDelete={(commentId) => void deleteComment(commentId)}
+          />
+        ) : null}
+
+        {activeTab === 'users' ? (
+          <AdminUsersSection
+            users={users}
+            loading={loadingUsers}
+            userBusyId={userBusyId}
+            currentUserId={user?.id}
+            onToggleActive={(target) => void toggleActive(target)}
+            onChangeRole={(target, roleId) => void changeRole(target, roleId)}
+            onDelete={(userId) => void deleteUser(userId)}
           />
         ) : null}
       </div>

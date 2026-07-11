@@ -143,6 +143,10 @@ function LoginModal({ isOpen, onClose }: LoginModalProps) {
         </form>
 
         <p className="login-modal-register-link">
+          <Link to="/forgot-password" onClick={onClose}>Zaboravili ste lozinku?</Link>
+        </p>
+
+        <p className="login-modal-register-link">
           Nemaš nalog? <Link to="/register" onClick={onClose}>Registruj se</Link>
         </p>
       </div>

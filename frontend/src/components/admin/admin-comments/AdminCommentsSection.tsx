@@ -8,7 +8,7 @@ type AdminCommentsSectionProps = {
   pendingCommentsCount: number;
   loading: boolean;
   commentBusyId: number | null;
-  onUpdateStatus: (comment: RecipeComment, isApproved: boolean) => void;
+  onUpdateStatus: (comment: RecipeComment, isApproved: boolean, rejectionReason?: string) => void;
   onDelete: (commentId: number) => void;
 };
 
@@ -20,6 +20,15 @@ function AdminCommentsSection({
   onUpdateStatus,
   onDelete,
 }: AdminCommentsSectionProps) {
+  const handleReject = (comment: RecipeComment) => {
+    const reason = window.prompt(
+      'Razlog odbijanja komentara (bice poslat autoru e-mailom):',
+    );
+    if (reason && reason.trim() !== '') {
+      onUpdateStatus(comment, false, reason.trim());
+    }
+  };
+
   return (
     <article className="admin-dashboard-card">
       <div className="admin-dashboard-card-head">
@@ -61,6 +70,9 @@ function AdminCommentsSection({
                   >
                     {comment.is_approved ? 'Odobren' : 'Na cekanju'}
                   </span>
+                  {!comment.is_approved && comment.rejection_reason ? (
+                    <p className="admin-dashboard-reason">Razlog: {comment.rejection_reason}</p>
+                  ) : null}
                 </td>
                 <td className="admin-dashboard-comment-cell">{comment.content}</td>
                 <td className="admin-dashboard-row-actions">
@@ -75,8 +87,8 @@ function AdminCommentsSection({
                   <button
                     type="button"
                     className="admin-dashboard-secondary"
-                    onClick={() => onUpdateStatus(comment, false)}
-                    disabled={commentBusyId === comment.id || !comment.is_approved}
+                    onClick={() => handleReject(comment)}
+                    disabled={commentBusyId === comment.id}
                   >
                     Odbij
                   </button>

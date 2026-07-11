@@ -163,6 +163,10 @@ function RecipeDetails() {
 	const category = recipe.categories[0]?.name ?? "Recept";
 	const isFavorite = favoriteSet.has(recipeId);
 	const isOwner = !!(user && recipe.created_by === user.id);
+	const isAdmin = user?.role_name === "admin";
+	const canManage = isOwner || isAdmin;
+	// One comment per recipe: the list includes the caller's own (even pending) one.
+	const alreadyCommented = !!(user && comments.some((comment) => comment.user_id === user.id));
 
 	return (
 		<section className="recipe-details-page">
@@ -206,7 +210,7 @@ function RecipeDetails() {
 									<h1>{recipe.name}</h1>
 									<p>{recipe.description ?? "Opis recepta nije dodat."}</p>
 								</div>
-								{isOwner ? (
+								{canManage ? (
 									<div className="recipe-details-page-owner-actions">
 										<button
 											type="button"
@@ -224,6 +228,12 @@ function RecipeDetails() {
 									</div>
 								) : null}
 							</div>
+
+							{canManage && !recipe.is_approved && recipe.rejection_reason ? (
+								<p className="recipe-details-page-rejection">
+									Recept je odbijen. Razlog: {recipe.rejection_reason}
+								</p>
+							) : null}
 
 							<div className="recipe-details-page-meta">
 								<div className="recipe-details-page-meta-item recipe-details-page-meta-blue">
@@ -257,6 +267,7 @@ function RecipeDetails() {
 						currentUserRating={userRatings[recipeId]}
 						ratingBusy={ratingBusy}
 						isLoggedIn={!!user}
+						alreadyCommented={alreadyCommented}
 						onCommentDraftChange={setCommentDraft}
 						onSubmitComment={submitComment}
 						onPromptLogin={promptLogin}

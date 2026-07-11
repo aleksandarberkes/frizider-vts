@@ -334,3 +334,14 @@
     align-items: start;
   }
 }
+
+/* Owner/admin banner when a recipe was rejected by an admin. */
+.recipe-details-page-rejection {
+  margin: 12px 0 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #fff4f4;
+  border-left: 4px solid #e05353;
+  color: #c0392b;
+  font-weight: 600;
+}

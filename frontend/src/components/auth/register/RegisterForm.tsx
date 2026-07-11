@@ -1,13 +1,9 @@
 import "./registerForm.css";
 import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../../api";
-import { useAuth } from "../../../auth/AuthContext";
 import { authApi } from "../../../services/authApi";
 
 const RegisterForm = () => {
-	const navigate = useNavigate();
-	const { login } = useAuth();
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [email, setEmail] = useState("");
@@ -30,15 +26,23 @@ const RegisterForm = () => {
 		setSubmitting(true);
 
 		try {
-			await authApi.register({
+			const result = await authApi.register({
 				email,
 				password,
 				first_name: firstName.trim(),
 				last_name: lastName.trim(),
 			});
-			await login(email, password);
-			setSuccessMessage("Nalog je uspešno kreiran.");
-			navigate("/");
+			// Accounts start inactive: the user must click the e-mailed link
+			// before they can log in, so we don't auto-login here.
+			setSuccessMessage(
+				result.message ??
+					"Nalog je kreiran. Proverite e-mail da biste aktivirali nalog.",
+			);
+			setFirstName("");
+			setLastName("");
+			setEmail("");
+			setPassword("");
+			setConfirmPassword("");
 		} catch (err) {
 			if (err instanceof TypeError) {
 				setError("Backend nije dostupan na http://localhost/frizider-vts/backend.");

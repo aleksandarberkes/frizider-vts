@@ -1,0 +1,117 @@
+.fridge-search-intro h2 {
+  margin: 0 0 4px;
+}
+
+.fridge-search-intro p {
+  margin: 0 0 16px;
+  color: #5b6b60;
+  max-width: 60ch;
+}
+
+.fridge-search-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .fridge-search-layout {
+    grid-template-columns: 300px 1fr;
+  }
+}
+
+.fridge-search-panel {
+  padding: 18px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e4ede7;
+  position: sticky;
+  top: 16px;
+}
+
+.fridge-search-panel h3,
+.fridge-search-results h3 {
+  margin: 0 0 12px;
+}
+
+.fridge-search-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.fridge-search-add input {
+  flex: 1;
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid #cdddd2;
+  font-size: 0.95rem;
+}
+
+.fridge-search-add button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 12px;
+  background: #0db14b;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fridge-search-add button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fridge-search-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fridge-search-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 999px;
+  background: #eefaf1;
+  border: 1px solid #b7e4c7;
+  font-weight: 600;
+  color: #16794a;
+}
+
+.fridge-search-chip button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: #16794a;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fridge-search-chip button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Local copy of the recipe grid so results lay out even if RecipeGrid.css is
+   not in the bundle for this route. */
+.fridge-search-results .recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}

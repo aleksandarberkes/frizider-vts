@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { recipesApi } from '../services/recipesApi';
+import { favoritesApi } from '../services/favoritesApi';
 import {
   mealPlansApi,
   WeeklyMenu,
@@ -65,13 +66,16 @@ function WeeklyPlan() {
     setError(null);
 
     try {
-      const [menusResponse, recipesResponse] = await Promise.all([
+      const [menusResponse, recipesResponse, favoritesResponse] = await Promise.all([
         mealPlansApi.list(),
         recipesApi.list(),
+        favoritesApi.list(),
       ]);
 
       setMenus(menusResponse);
-      setRecipes(recipesResponse);
+      // Per spec, a jelovnik is built from the user's favorite recipes.
+      const favoriteIds = new Set(favoritesResponse.map((entry) => Number(entry.recipe_id)));
+      setRecipes(recipesResponse.filter((recipe) => favoriteIds.has(recipe.id)));
 
       if (menusResponse[0]) {
         await loadMenu(menusResponse[0].id);
@@ -256,6 +260,13 @@ function WeeklyPlan() {
               />
             </label>
 
+            {recipes.length === 0 ? (
+              <p className="weekly-plan-message">
+                Jelovnik se pravi od omiljenih recepata. Dodajte recepte u omiljene
+                da biste ih ovde birali.
+              </p>
+            ) : null}
+
             {rows.map((row, index) => (
               <div className="weekly-plan-form-row" key={`${index}-${row.day_of_week}-${row.recipe_id}`}>
                 <label className="weekly-plan-field">
@@ -273,7 +284,7 @@ function WeeklyPlan() {
                 </label>
 
                 <label className="weekly-plan-field">
-                  <span>Recept</span>
+                  <span>Recept (iz omiljenih)</span>
                   <select
                     value={row.recipe_id}
                     onChange={(event) => updateRow(index, 'recipe_id', event.target.value)}

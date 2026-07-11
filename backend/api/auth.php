@@ -2,6 +2,9 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../config/tokens.php';
+require_once __DIR__ . '/../config/mail.php';
+require_once __DIR__ . '/../config/Mailer.php';
 
 $action = $segments[2] ?? '';
 
@@ -62,9 +65,11 @@ if ($action === 'register' && $method === 'POST') {
     }
 
     try {
+        // New accounts start inactive; they must click the e-mailed activation
+        // link before they can log in (login blocks is_active = 0).
         $stmt = $pdo->prepare(
-            'INSERT INTO users (email, password_hash, first_name, last_name, phone, role_id)
-             VALUES (:email, :password_hash, :first_name, :last_name, :phone, :role_id)'
+            'INSERT INTO users (email, password_hash, first_name, last_name, phone, role_id, is_active)
+             VALUES (:email, :password_hash, :first_name, :last_name, :phone, :role_id, 0)'
         );
         $stmt->execute([
             ':email'         => $email,
@@ -83,15 +88,18 @@ if ($action === 'register' && $method === 'POST') {
         throw $e;
     }
 
+    $newUserId = (int)$pdo->lastInsertId();
+
+    // Issue an activation token (valid 24h) and e-mail the activation link.
+    $token = createUserToken($pdo, $newUserId, 'activation', 86400);
+    $link  = FRONTEND_BASE_URL . '/activate?token=' . urlencode($token);
+    Mailer::sendActivation($email, $firstName, $link);
+
     http_response_code(201);
     echo json_encode([
-        'id'         => (int)$pdo->lastInsertId(),
-        'email'      => $email,
-        'first_name' => $firstName,
-        'last_name'  => $lastName,
-        'phone'      => $phone,
-        'role_id'    => (int)$roleId,
-        'role_name'  => 'user',
+        'status'  => 'activation_sent',
+        'message' => 'Nalog je kreiran. Proverite e-mail da biste aktivirali nalog.',
+        'email'   => $email,
     ]);
     exit;
 }
@@ -166,6 +174,84 @@ if ($action === 'logout' && $method === 'POST') {
 if ($action === 'me' && $method === 'GET') {
     $user = requireUser();
     echo json_encode(publicUserShape($user));
+    exit;
+}
+
+// POST /api/auth/activate — consume an activation token, activate the account
+if ($action === 'activate' && $method === 'POST') {
+    $body  = readJsonBody();
+    $token = trim($body['token'] ?? '');
+
+    $pdo    = getConnection();
+    $userId = consumeUserToken($pdo, $token, 'activation');
+    if ($userId === null) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Aktivacioni link je nevazeci ili je istekao.']);
+        exit;
+    }
+
+    $pdo->prepare('UPDATE users SET is_active = 1 WHERE id = :id')
+        ->execute([':id' => $userId]);
+
+    echo json_encode(['status' => 'activated', 'message' => 'Nalog je aktiviran. Sada se mozete prijaviti.']);
+    exit;
+}
+
+// POST /api/auth/forgot-password — issue a reset token and e-mail the link.
+// Always responds 200 (never reveals whether the e-mail is registered).
+if ($action === 'forgot-password' && $method === 'POST') {
+    $body  = readJsonBody();
+    $email = trim($body['email'] ?? '');
+
+    if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $pdo  = getConnection();
+        $stmt = $pdo->prepare(
+            'SELECT id, first_name FROM users WHERE email = :email LIMIT 1'
+        );
+        $stmt->execute([':email' => $email]);
+        $user = $stmt->fetch();
+
+        if ($user) {
+            $token = createUserToken($pdo, (int)$user['id'], 'password_reset', 3600);
+            $link  = FRONTEND_BASE_URL . '/reset-password?token=' . urlencode($token);
+            Mailer::sendPasswordReset($email, (string)($user['first_name'] ?? ''), $link);
+        }
+    }
+
+    echo json_encode([
+        'status'  => 'reset_sent',
+        'message' => 'Ako nalog sa tim e-mailom postoji, poslali smo link za promenu lozinke.',
+    ]);
+    exit;
+}
+
+// POST /api/auth/reset-password — consume a reset token, set a new password
+if ($action === 'reset-password' && $method === 'POST') {
+    $body     = readJsonBody();
+    $token    = trim($body['token'] ?? '');
+    $password = (string)($body['password'] ?? '');
+
+    if (strlen($password) < 6) {
+        http_response_code(422);
+        echo json_encode(['error' => 'password must be at least 6 characters']);
+        exit;
+    }
+
+    $pdo    = getConnection();
+    $userId = consumeUserToken($pdo, $token, 'password_reset');
+    if ($userId === null) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Link za promenu lozinke je nevazeci ili je istekao.']);
+        exit;
+    }
+
+    $pdo->prepare('UPDATE users SET password_hash = :hash WHERE id = :id')
+        ->execute([
+            ':hash' => password_hash($password, PASSWORD_BCRYPT),
+            ':id'   => $userId,
+        ]);
+
+    echo json_encode(['status' => 'password_reset', 'message' => 'Lozinka je promenjena. Sada se mozete prijaviti.']);
     exit;
 }
 

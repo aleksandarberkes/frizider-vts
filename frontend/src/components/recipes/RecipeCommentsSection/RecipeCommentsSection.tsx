@@ -12,6 +12,7 @@ type RecipeCommentsSectionProps = {
   currentUserRating?: number;
   ratingBusy: boolean;
   isLoggedIn: boolean;
+  alreadyCommented?: boolean;
   onCommentDraftChange: (value: string) => void;
   onSubmitComment: (event: FormEvent<HTMLFormElement>) => void;
   onPromptLogin: () => void;
@@ -26,6 +27,7 @@ function RecipeCommentsSection({
   currentUserRating,
   ratingBusy,
   isLoggedIn,
+  alreadyCommented,
   onCommentDraftChange,
   onSubmitComment,
   onPromptLogin,
@@ -57,7 +59,13 @@ function RecipeCommentsSection({
           />
         </div>
 
-        {isLoggedIn ? (
+        {!isLoggedIn ? (
+          <button type="button" className="recipe-comments-login" onClick={onPromptLogin}>
+            Uloguj se za komentarisanje
+          </button>
+        ) : alreadyCommented ? (
+          <p className="recipe-comments-notice">Vec ste komentarisali ovaj recept.</p>
+        ) : (
           <form className="recipe-comments-form" onSubmit={onSubmitComment}>
             <textarea
               value={commentDraft}
@@ -71,10 +79,6 @@ function RecipeCommentsSection({
             </button>
             {commentNotice ? <p className="recipe-comments-notice">{commentNotice}</p> : null}
           </form>
-        ) : (
-          <button type="button" className="recipe-comments-login" onClick={onPromptLogin}>
-            Uloguj se za komentarisanje
-          </button>
         )}
       </div>
 

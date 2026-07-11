@@ -20,6 +20,7 @@ frontend/.env.production.local
 # PHP
 backend/vendor/
 backend/uploads/
+backend/logs/
 
 # Environment files
 .env

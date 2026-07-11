@@ -121,3 +121,47 @@
     justify-content: space-between;
   }
 }
+
+/* "Moj frizider" match: highlight the ingredients the user is missing. */
+.recipe-card-missing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff4f4;
+  border: 1px solid #f5c2c2;
+}
+
+.recipe-card-missing-complete {
+  background: #eefaf1;
+  border-color: #b7e4c7;
+  color: #16794a;
+  font-weight: 700;
+  margin: 0;
+}
+
+.recipe-card-missing-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #c0392b;
+}
+
+.recipe-card-missing-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recipe-card-missing-item {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #e05353;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+}

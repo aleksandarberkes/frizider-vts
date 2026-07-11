@@ -30,9 +30,17 @@ export type Recipe = {
   estimated_price: number | null;
   created_by: number;
   is_approved: boolean;
+  rejection_reason: string | null;
   created_at: string;
   ingredients: RecipeIngredient[];
   categories: RecipeCategory[];
+};
+
+// A recipe returned by the "Moj frizider" match endpoint: a normal recipe plus
+// the ingredients the caller is missing (at most 2) relative to their fridge.
+export type FridgeRecipeMatch = Recipe & {
+  missing_ingredients: RecipeIngredient[];
+  missing_count: number;
 };
 
 export type FavoriteRecipe = {
@@ -58,6 +66,7 @@ export type RecipeComment = {
   rating?: number | null;
   content: string;
   is_approved: boolean;
+  rejection_reason?: string | null;
   created_at?: string;
   first_name?: string | null;
   last_name?: string | null;

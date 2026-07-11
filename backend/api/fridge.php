@@ -3,12 +3,79 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/util.php';
 require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../config/recipe_shape.php';
 
 // /api/fridge          → user's own fridge
 // /api/fridge/{id}     → a single ingredient slot in the user's fridge
+// /api/fridge/match    → "Moj frizider": recipes missing <= 2 fridge ingredients
 // /api/fridge?user_id=N → admin can read another user's fridge
 
+$subResource  = $segments[2] ?? '';
 $ingredientId = intSegment($segments, 2);
+
+// GET /api/fridge/match — recipes the caller can almost cook.
+// Returns recipes visible to the caller that are missing AT MOST 2 of their
+// ingredients relative to the caller's fridge, each annotated with the missing
+// ingredients and sorted by fewest-missing first. Empty fridge → [].
+if ($method === 'GET' && $subResource === 'match') {
+    $caller = requireUser();
+    $pdo    = getConnection();
+
+    // The caller's fridge as a set of ingredient ids.
+    $fridgeStmt = $pdo->prepare(
+        'SELECT ingredient_id FROM user_fridge WHERE user_id = :uid'
+    );
+    $fridgeStmt->execute([':uid' => $caller['id']]);
+    $fridgeIds = array_map('intval', $fridgeStmt->fetchAll(PDO::FETCH_COLUMN));
+
+    if (empty($fridgeIds)) {
+        respondJson(200, []);
+    }
+    $fridgeSet = array_flip($fridgeIds);
+
+    // Recipes the caller may see: approved, plus their own drafts.
+    $recipeStmt = $pdo->prepare(
+        'SELECT id, name, description, image_path, estimated_price, created_by,
+                is_approved, rejection_reason, created_at
+         FROM recipes
+         WHERE is_approved = 1 OR created_by = :uid
+         ORDER BY id'
+    );
+    $recipeStmt->execute([':uid' => $caller['id']]);
+    $rows = $recipeStmt->fetchAll();
+
+    $ids            = array_column($rows, 'id');
+    $ingredientsMap = loadIngredientsForRecipes($pdo, $ids);
+    $categoriesMap  = loadCategoriesForRecipes($pdo, $ids);
+
+    $matches = [];
+    foreach ($rows as $row) {
+        $recipeIngredients = $ingredientsMap[$row['id']] ?? [];
+        // A recipe with no ingredients can't be "matched" against a fridge.
+        if (empty($recipeIngredients)) {
+            continue;
+        }
+        $missing = array_values(array_filter(
+            $recipeIngredients,
+            static fn (array $ing) => !isset($fridgeSet[$ing['ingredient_id']])
+        ));
+        if (count($missing) > 2) {
+            continue;
+        }
+        $recipe                      = shapeRecipe($row, $ingredientsMap, $categoriesMap);
+        $recipe['missing_ingredients'] = $missing;
+        $recipe['missing_count']       = count($missing);
+        $matches[] = $recipe;
+    }
+
+    // Fewest missing first, then by name for stable ordering.
+    usort($matches, static function (array $a, array $b): int {
+        return $a['missing_count'] <=> $b['missing_count']
+            ?: strcasecmp($a['name'], $b['name']);
+    });
+
+    respondJson(200, $matches);
+}
 
 // GET /api/fridge — list the caller's fridge (admin can read any with ?user_id=N)
 if ($method === 'GET' && $ingredientId === null) {

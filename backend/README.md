@@ -22,10 +22,21 @@ Assumes XAMPP at `/Applications/XAMPP/xamppfiles/`, served at `http://localhost/
 
 3. **Connection settings** live in `backend/config/database.php` (`DB_NAME = 'fridge'`, root/no-password — XAMPP defaults).
 
+4. **Mail (activation, password reset, rejection notices)** — settings live in `backend/config/mail.php`. Leave `SMTP_HOST = ''` for local dev: every e-mail (including its activation/reset link) is written to `backend/logs/mail.log` instead of being sent, so the flows work without a mail server. Make the log dir writable by Apache once: `chmod 777 backend/logs`. To send for real, fill in the `SMTP_*` constants (e.g. Mailtrap, or Gmail with an app password). Mail is sent via PHPMailer, vendored under `backend/lib/PHPMailer/` (no Composer needed).
+
+> **Note:** new registrations are created **inactive** and must click the activation link (found in `mail.log` in dev) before they can log in. Seeded users are already active.
+
 Base URL for everything below:
 ```
 http://localhost/frizider-vts/backend
 ```
+
+### Endpoints added for "Moj frizider" + e-mail flows
+- `GET  /api/fridge/match` — recipes missing at most 2 of the caller's fridge ingredients (each annotated with `missing_ingredients` + `missing_count`).
+- `POST /api/auth/activate` `{token}` — activate an account.
+- `POST /api/auth/forgot-password` `{email}` — e-mail a reset link (always 200).
+- `POST /api/auth/reset-password` `{token, password}` — set a new password.
+- `PUT  /api/recipes/{id}` / `PUT /api/comments/{id}` — admins may include `rejection_reason`; on rejection the author is e-mailed the reason.
 
 ---
 

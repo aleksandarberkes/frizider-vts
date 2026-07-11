@@ -12,6 +12,8 @@ export type RecipePayload = {
   }[];
   categories: number[];
   is_approved?: boolean;
+  // When an admin rejects (is_approved: false), the reason e-mailed to the author.
+  rejection_reason?: string;
 };
 
 export const recipesApi = {
