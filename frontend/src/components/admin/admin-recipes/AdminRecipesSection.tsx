@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import EmptyState from '../../feedback/EmptyState';
 import LoadingState from '../../feedback/LoadingState';
@@ -20,13 +21,32 @@ function AdminRecipesSection({
   onReject,
   onDelete,
 }: AdminRecipesSectionProps) {
+  const [rejectingRecipe, setRejectingRecipe] = useState<Recipe | null>(null);
+  const [viewingReasonRecipe, setViewingReasonRecipe] = useState<Recipe | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
+
   const handleReject = (recipe: Recipe) => {
-    const reason = window.prompt(
-      `Razlog odbijanja recepta "${recipe.name}" (bice poslat autoru e-mailom):`,
-    );
-    if (reason && reason.trim() !== '') {
-      onReject(recipe, reason.trim());
+    setRejectingRecipe(recipe);
+    setRejectionReason(recipe.rejection_reason ?? '');
+  };
+
+  const closeRejectDialog = () => {
+    setRejectingRecipe(null);
+    setRejectionReason('');
+  };
+
+  const submitReject = () => {
+    if (!rejectingRecipe) {
+      return;
     }
+
+    const reason = rejectionReason.trim();
+    if (reason === '') {
+      return;
+    }
+
+    onReject(rejectingRecipe, reason);
+    closeRejectDialog();
   };
 
   const handleDelete = (recipe: Recipe) => {
@@ -61,6 +81,7 @@ function AdminRecipesSection({
               <th>Naziv</th>
               <th>Autor</th>
               <th>Status</th>
+              <th>Razlog odbijanja</th>
               <th>Akcije</th>
             </tr>
           </thead>
@@ -84,9 +105,19 @@ function AdminRecipesSection({
                     >
                       {recipe.is_approved ? 'Odobren' : 'Na cekanju'}
                     </span>
+                  </td>
+                  <td className="admin-dashboard-reason-cell">
                     {!recipe.is_approved && recipe.rejection_reason ? (
-                      <p className="admin-dashboard-reason">Razlog: {recipe.rejection_reason}</p>
-                    ) : null}
+                      <button
+                        type="button"
+                        className="admin-dashboard-reason-preview"
+                        onClick={() => setViewingReasonRecipe(recipe)}
+                      >
+                        {recipe.rejection_reason}
+                      </button>
+                    ) : (
+                      <span className="admin-dashboard-muted">-</span>
+                    )}
                   </td>
                   <td className="admin-dashboard-row-actions">
                     <button
@@ -123,6 +154,107 @@ function AdminRecipesSection({
           </tbody>
         </table>
       )}
+
+      {rejectingRecipe ? (
+        <div className="admin-dashboard-modal-backdrop" role="presentation">
+          <div
+            className="admin-dashboard-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="admin-reject-title"
+          >
+            <div className="admin-dashboard-modal-head">
+              <h3 id="admin-reject-title">Odbij recept</h3>
+              <button
+                type="button"
+                className="admin-dashboard-modal-close"
+                onClick={closeRejectDialog}
+                aria-label="Zatvori"
+              >
+                x
+              </button>
+            </div>
+
+            <p className="admin-dashboard-modal-copy">
+              Razlog odbijanja za "{rejectingRecipe.name}" bice poslat autoru e-mailom.
+            </p>
+
+            <label className="admin-dashboard-field">
+              <span>Razlog odbijanja</span>
+              <textarea
+                value={rejectionReason}
+                onChange={(event) => setRejectionReason(event.target.value)}
+                rows={6}
+                autoFocus
+              />
+            </label>
+
+            <div className="admin-dashboard-form-actions">
+              <button
+                type="button"
+                className="admin-dashboard-secondary"
+                onClick={closeRejectDialog}
+              >
+                Odustani
+              </button>
+              <button
+                type="button"
+                className="admin-dashboard-danger"
+                onClick={submitReject}
+                disabled={rejectionReason.trim() === ''}
+              >
+                Potvrdi odbijanje
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {viewingReasonRecipe ? (
+        <div className="admin-dashboard-modal-backdrop" role="presentation">
+          <div
+            className="admin-dashboard-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="admin-reason-title"
+          >
+            <div className="admin-dashboard-modal-head">
+              <h3 id="admin-reason-title">Razlog odbijanja</h3>
+              <button
+                type="button"
+                className="admin-dashboard-modal-close"
+                onClick={() => setViewingReasonRecipe(null)}
+                aria-label="Zatvori"
+              >
+                x
+              </button>
+            </div>
+
+            <p className="admin-dashboard-modal-copy">
+              Recept: "{viewingReasonRecipe.name}"
+            </p>
+
+            <label className="admin-dashboard-field">
+              <span>Ceo razlog</span>
+              <textarea
+                value={viewingReasonRecipe.rejection_reason ?? ''}
+                rows={8}
+                readOnly
+              />
+            </label>
+
+            <div className="admin-dashboard-form-actions">
+              <button
+                type="button"
+                className="admin-dashboard-secondary"
+                onClick={() => setViewingReasonRecipe(null)}
+              >
+                Zatvori
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </article>
   );
 }

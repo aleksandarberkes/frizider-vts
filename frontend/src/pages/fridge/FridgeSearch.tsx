@@ -118,8 +118,8 @@ function FridgeSearch() {
       <header className="fridge-search-intro">
         <h2>Moj frizider</h2>
         <p>
-          Dodajte sastojke koje imate kod kuce i pronadjite recepte kojima
-          nedostaju najvise 2 sastojka.
+          Dodajte sastojke koje imate kod kuce i pronadjite recepte koji koriste
+          vase namirnice, a nedostaju im najvise 2 sastojka.
         </p>
       </header>
 
@@ -185,7 +185,7 @@ function FridgeSearch() {
             {fridge.length === 0 ? (
               <EmptyState message="Dodajte bar jedan sastojak da biste videli recepte." />
             ) : matches.length === 0 ? (
-              <EmptyState message="Nema recepata kojima nedostaju najvise 2 sastojka. Dodajte jos sastojaka." />
+              <EmptyState message="Nema recepata koji koriste vase namirnice i kojima nedostaju najvise 2 sastojka." />
             ) : (
               <div className="recipe-grid">
                 {matches.map((recipe) => (

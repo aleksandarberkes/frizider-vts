@@ -9,6 +9,21 @@ $id  = intSegment($segments, 2);
 
 // ----- helpers --------------------------------------------------------------
 
+function shapeUserRow(array $row): array
+{
+    return [
+        'id'         => (int)$row['id'],
+        'email'      => $row['email'],
+        'first_name' => $row['first_name'],
+        'last_name'  => $row['last_name'],
+        'phone'      => $row['phone'],
+        'role_id'    => (int)$row['role_id'],
+        'role_name'  => $row['role_name'],
+        'is_active'  => (bool)$row['is_active'],
+        'created_at' => $row['created_at'] ?? null,
+    ];
+}
+
 function fetchUserRow(PDO $pdo, int $id): ?array
 {
     $stmt = $pdo->prepare(
@@ -20,7 +35,7 @@ function fetchUserRow(PDO $pdo, int $id): ?array
     );
     $stmt->execute([':id' => $id]);
     $row = $stmt->fetch();
-    return $row ?: null;
+    return $row ? shapeUserRow($row) : null;
 }
 
 function deleteUserAndOwnedContent(PDO $pdo, int $userId): void
@@ -234,7 +249,7 @@ if ($method === 'GET') {
          JOIN roles r ON r.id = u.role_id
          ORDER BY u.id'
     );
-    respondJson(200, $stmt->fetchAll());
+    respondJson(200, array_map('shapeUserRow', $stmt->fetchAll()));
 }
 
 if ($method === 'POST') {
@@ -292,8 +307,10 @@ if ($method === 'POST') {
         'first_name' => $firstName,
         'last_name'  => $lastName,
         'phone'      => $phone,
-        'role_id'    => $roleId,
+        'role_id'    => (int)$roleId,
         'role_name'  => $roleName,
+        'is_active'  => true,
+        'created_at' => null,
     ]);
 }
 

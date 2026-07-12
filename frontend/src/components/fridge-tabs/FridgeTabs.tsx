@@ -10,6 +10,7 @@ function FridgeTabs() {
           isActive ? 'fridge-tab fridge-tab-active' : 'fridge-tab'
         }
       >
+        <img className='tab-icon' src="/appicons/fridge-icon.svg" alt="Frigde icon" />
         Moj frizider
       </NavLink>
       <NavLink
@@ -27,6 +28,7 @@ function FridgeTabs() {
           isActive ? 'fridge-tab fridge-tab-active' : 'fridge-tab'
         }
       >
+        <img className='tab-icon' src="/appicons/weekly-icon.svg" alt="Frigde icon" />
         Nedeljni plan
       </NavLink>
       <NavLink

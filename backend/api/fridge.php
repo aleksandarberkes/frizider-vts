@@ -7,16 +7,17 @@ require_once __DIR__ . '/../config/recipe_shape.php';
 
 // /api/fridge          → user's own fridge
 // /api/fridge/{id}     → a single ingredient slot in the user's fridge
-// /api/fridge/match    → "Moj frizider": recipes missing <= 2 fridge ingredients
+// /api/fridge/match    → "Moj frizider": recipes using the fridge and missing <= 2 ingredients
 // /api/fridge?user_id=N → admin can read another user's fridge
 
 $subResource  = $segments[2] ?? '';
 $ingredientId = intSegment($segments, 2);
 
 // GET /api/fridge/match — recipes the caller can almost cook.
-// Returns recipes visible to the caller that are missing AT MOST 2 of their
-// ingredients relative to the caller's fridge, each annotated with the missing
-// ingredients and sorted by fewest-missing first. Empty fridge → [].
+// Returns recipes visible to the caller that use at least one ingredient from
+// the caller's fridge and are missing AT MOST 2 ingredients relative to it.
+// Each recipe is annotated with the matched and missing counts plus the missing
+// ingredients. Empty fridge → [].
 if ($method === 'GET' && $subResource === 'match') {
     $caller = requireUser();
     $pdo    = getConnection();
@@ -55,22 +56,31 @@ if ($method === 'GET' && $subResource === 'match') {
         if (empty($recipeIngredients)) {
             continue;
         }
-        $missing = array_values(array_filter(
-            $recipeIngredients,
-            static fn (array $ing) => !isset($fridgeSet[$ing['ingredient_id']])
-        ));
-        if (count($missing) > 2) {
+        $missing = [];
+        $matchedCount = 0;
+        foreach ($recipeIngredients as $ing) {
+            if (isset($fridgeSet[$ing['ingredient_id']])) {
+                $matchedCount++;
+            } else {
+                $missing[] = $ing;
+            }
+        }
+
+        $missingCount = count($missing);
+        if ($matchedCount === 0 || $missingCount > 2) {
             continue;
         }
         $recipe                      = shapeRecipe($row, $ingredientsMap, $categoriesMap);
         $recipe['missing_ingredients'] = $missing;
-        $recipe['missing_count']       = count($missing);
+        $recipe['missing_count']       = $missingCount;
+        $recipe['matched_count']       = $matchedCount;
         $matches[] = $recipe;
     }
 
-    // Fewest missing first, then by name for stable ordering.
+    // Most matches first, then fewest missing, then by name for stable ordering.
     usort($matches, static function (array $a, array $b): int {
-        return $a['missing_count'] <=> $b['missing_count']
+        return $b['matched_count'] <=> $a['matched_count']
+            ?: $a['missing_count'] <=> $b['missing_count']
             ?: strcasecmp($a['name'], $b['name']);
     });
 

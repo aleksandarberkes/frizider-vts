@@ -97,7 +97,21 @@
   background: #ffffff;
 }
 
-.admin-dashboard-field input:focus {
+.admin-dashboard-field textarea {
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  border: 1px solid #c9d6e3;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  line-height: 1.5;
+  color: #142133;
+  background: #ffffff;
+}
+
+.admin-dashboard-field input:focus,
+.admin-dashboard-field textarea:focus {
   outline: 2px solid #cfe2ff;
   border-color: #7ba7e1;
 }
@@ -138,6 +152,37 @@
   max-width: 420px;
   white-space: normal;
   overflow-wrap: anywhere;
+}
+
+.admin-dashboard-reason-cell {
+  max-width: 360px;
+  min-width: 220px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.admin-dashboard-reason-preview {
+  width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #c0392b;
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  text-align: left;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.admin-dashboard-reason-preview:hover,
+.admin-dashboard-reason-preview:focus {
+  color: #9f2f24;
+  text-decoration: underline;
 }
 
 .admin-dashboard-status {
@@ -206,6 +251,10 @@
   color: #ffffff;
 }
 
+.admin-dashboard-muted {
+  color: #8a97a8;
+}
+
 .admin-dashboard-refresh:disabled,
 .admin-dashboard-approve:disabled,
 .admin-dashboard-primary:disabled,
@@ -213,6 +262,58 @@
 .admin-dashboard-danger:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+.admin-dashboard-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.admin-dashboard-modal {
+  width: min(560px, 100%);
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border-radius: 18px;
+  border: 1px solid #d9e1ea;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+}
+
+.admin-dashboard-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-dashboard-modal-head h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.admin-dashboard-modal-close {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: #e8eef5;
+  color: #142133;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.admin-dashboard-modal-copy {
+  margin: 0;
+  color: #5f6b7a;
+  overflow-wrap: anywhere;
 }
 
 @media (min-width: 1024px) {
@@ -239,12 +340,14 @@
   }
 }
 
-/* Rejection reason shown under a pending/rejected status. */
+/* Rejection reason shown in its own table column. */
 .admin-dashboard-reason {
-  margin: 6px 0 0;
+  margin: 0;
   font-size: 0.8rem;
   color: #c0392b;
-  max-width: 320px;
+  line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /* A Link styled to sit inline with the action buttons. */

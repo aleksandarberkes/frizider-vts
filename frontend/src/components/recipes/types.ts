@@ -41,6 +41,7 @@ export type Recipe = {
 export type FridgeRecipeMatch = Recipe & {
   missing_ingredients: RecipeIngredient[];
   missing_count: number;
+  matched_count: number;
 };
 
 export type FavoriteRecipe = {
