@@ -90,7 +90,7 @@ function LoginModal({ isOpen, onClose }: LoginModalProps) {
           onClick={onClose}
           aria-label="Zatvori prijavu"
         >
-          <img src="/icons/close-icon.svg" alt="" />
+          <img src="/appicons/close-icon.svg" alt="" />
         </button>
 
         <header className="register-form-header login-modal-header">
@@ -102,7 +102,7 @@ function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <div className="register-field">
             <label htmlFor="login-email">Email Adresa</label>
             <div className="register-input-wrap">
-              <img src="/icons/email-icon.svg" alt="" className="register-input-icon" />
+              <img src="/appicons/email-icon.svg" alt="" className="register-input-icon" />
               <input
                 className="register-input"
                 type="email"
@@ -120,7 +120,7 @@ function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <div className="register-field">
             <label htmlFor="login-password">Lozinka</label>
             <div className="register-input-wrap">
-              <img src="/icons/password-icon.svg" alt="" className="register-input-icon" />
+              <img src="/appicons/password-icon.svg" alt="" className="register-input-icon" />
               <input
                 className="register-input"
                 type="password"

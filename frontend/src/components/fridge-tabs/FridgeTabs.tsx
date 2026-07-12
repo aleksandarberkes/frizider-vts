@@ -18,7 +18,7 @@ function FridgeTabs() {
           isActive ? 'fridge-tab fridge-tab-active' : 'fridge-tab'
         }
       >
-        <img src="/icons/fav-icon.svg" alt="Favorites icon" className="tab-icon" />
+        <img src="/appicons/fav-icon.svg" alt="Favorites icon" className="tab-icon" />
         Omiljeni
       </NavLink>
       <NavLink
@@ -35,7 +35,7 @@ function FridgeTabs() {
           isActive ? 'fridge-tab fridge-tab-active' : 'fridge-tab'
         }
       >
-        <img src="/icons/user-icon.svg" alt="User icon" className="tab-icon" />
+        <img src="/appicons/user-icon.svg" alt="User icon" className="tab-icon" />
         Profil
       </NavLink>
       <NavLink
@@ -44,7 +44,7 @@ function FridgeTabs() {
           isActive ? 'fridge-tab fridge-tab-active' : 'fridge-tab'
         }
       >
-        <img src="/icons/settings-icon.svg" alt="Setting icon" className="tab-icon" />
+        <img src="/appicons/settings-icon.svg" alt="Setting icon" className="tab-icon" />
         Podesavanja
       </NavLink>
     </nav>

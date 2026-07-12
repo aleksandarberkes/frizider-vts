@@ -62,7 +62,7 @@ function ResetPassword() {
             <div className="register-field">
               <label htmlFor="password">Nova lozinka</label>
               <div className="register-input-wrap">
-                <img src="/icons/password-icon.svg" alt="" className="register-input-icon" />
+                <img src="/appicons/password-icon.svg" alt="" className="register-input-icon" />
                 <input
                   className="register-input"
                   type="password"
@@ -81,7 +81,7 @@ function ResetPassword() {
             <div className="register-field">
               <label htmlFor="confirmPassword">Potvrdite lozinku</label>
               <div className="register-input-wrap">
-                <img src="/icons/password-icon.svg" alt="" className="register-input-icon" />
+                <img src="/appicons/password-icon.svg" alt="" className="register-input-icon" />
                 <input
                   className="register-input"
                   type="password"

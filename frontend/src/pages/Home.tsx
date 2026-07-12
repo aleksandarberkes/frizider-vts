@@ -13,22 +13,22 @@ import './Home.css';
 
 const features = [
   {
-    icon: '/icons/fridge-icon.svg',
+    icon: '/appicons/fridge-icon.svg',
     title: 'Moj frižider',
     text: 'Unesi namirnice koje imaš kod kuće i dobij recepte kojima nedostaju najviše 2 sastojka.',
   },
   {
-    icon: '/icons/recepies-icon.svg',
+    icon: '/appicons/recepies-icon.svg',
     title: 'Recepti po kategorijama',
     text: 'Pretraži i filtriraj recepte po kategorijama, ceni i oceni ostalih korisnika.',
   },
   {
-    icon: '/icons/fav-icon.svg',
+    icon: '/appicons/fav-icon.svg',
     title: 'Omiljeni i jelovnik',
     text: 'Sačuvaj omiljene recepte i od njih napravi nedeljni jelovnik po danima.',
   },
   {
-    icon: '/icons/user-icon.svg',
+    icon: '/appicons/user-icon.svg',
     title: 'Ocene i komentari',
     text: 'Oceni recepte i podeli svoje mišljenje kroz komentare sa zajednicom.',
   },

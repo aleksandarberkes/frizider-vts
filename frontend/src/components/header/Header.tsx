@@ -73,12 +73,12 @@ const Header = () => {
 
 					<div className="desktop-navigation">
 						<Link to="/" className="nav-link">
-							<img src="/icons/home-icon.svg" alt="Home page icon" />
+							<img src="/appicons/home-icon.svg" alt="Home page icon" />
 							<p>Početna</p>
 						</Link>
 
 						<Link to="/recipes" className="nav-link">
-							<img src="/icons/recepies-icon.svg" alt="Recipes icon" />
+							<img src="/appicons/recepies-icon.svg" alt="Recipes icon" />
 							<span>Recepti</span>
 						</Link>
 
@@ -87,7 +87,7 @@ const Header = () => {
 							className="nav-link nav-link-button"
 							onClick={() => handleProtectedNavigation("/fridge")}
 						>
-							<img src="/icons/fridge-icon.svg" alt="Fridge icon" />
+							<img src="/appicons/fridge-icon.svg" alt="Fridge icon" />
 							<span>Moj frižider</span>
 						</button>
 
@@ -97,7 +97,7 @@ const Header = () => {
 								className="nav-link"
 								onClick={closeMenu}
 							>
-								<img src="/icons/user-icon.svg" alt="Admin panel icon" />
+								<img src="/appicons/user-icon.svg" alt="Admin panel icon" />
 								<span>Admin panel</span>
 							</Link>
 						) : null}
@@ -141,9 +141,9 @@ const Header = () => {
 						aria-expanded={isMenuOpen}
 					>
 						{isMenuOpen ? (
-							<img src="/icons/close-icon.svg" alt="Close menu" />
+							<img src="/appicons/close-icon.svg" alt="Close menu" />
 						) : (
-							<img src="/icons/menu-icon.svg" alt="Open menu" />
+							<img src="/appicons/menu-icon.svg" alt="Open menu" />
 						)}
 					</button>
 				</div>
@@ -151,12 +151,12 @@ const Header = () => {
 				<div className={mobileNavClass}>
 					<div className="mobile-navigation-list">
 						<Link to="/" className="nav-link" onClick={closeMenu}>
-							<img src="/icons/home-icon.svg" alt="Home page icon" />
+							<img src="/appicons/home-icon.svg" alt="Home page icon" />
 							<span>Početna</span>
 						</Link>
 
 						<Link to="/recipes" className="nav-link" onClick={closeMenu}>
-							<img src="/icons/recepies-icon.svg" alt="Recipes icon" />
+							<img src="/appicons/recepies-icon.svg" alt="Recipes icon" />
 							<span>Recepti</span>
 						</Link>
 
@@ -166,7 +166,7 @@ const Header = () => {
 							onClick={() => handleProtectedNavigation("/fridge")}
 						>
 							<span className="nav-link-icon">
-								<img src="/icons/fridge-icon.svg" alt="Fridge icon" />
+								<img src="/appicons/fridge-icon.svg" alt="Fridge icon" />
 							</span>
 							<span>Moj frižider</span>
 						</button>
@@ -178,7 +178,7 @@ const Header = () => {
 								onClick={closeMenu}
 							>
 								<span className="nav-link-icon">
-									<img src="/icons/user-icon.svg" alt="Admin panel icon" />
+									<img src="/appicons/user-icon.svg" alt="Admin panel icon" />
 								</span>
 								<span>Admin panel</span>
 							</Link>

@@ -42,7 +42,7 @@ function ForgotPassword() {
           <div className="register-field">
             <label htmlFor="email">Email Adresa</label>
             <div className="register-input-wrap">
-              <img src="/icons/email-icon.svg" alt="" className="register-input-icon" />
+              <img src="/appicons/email-icon.svg" alt="" className="register-input-icon" />
               <input
                 className="register-input"
                 type="email"

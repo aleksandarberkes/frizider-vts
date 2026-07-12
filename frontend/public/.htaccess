@@ -1,0 +1,26 @@
+# Ensure SVGs are served with the correct MIME type.
+AddType image/svg+xml .svg .svgz
+
+# The repo is checked out at the web root, so hide its source/meta files.
+# (The built site + /backend API are the only things meant to be public.)
+RedirectMatch 404 ^/(\.git|frontend|docs|bin|node_modules)(/|$)
+RedirectMatch 404 ^/(deploy\.sh|package\.json|package-lock\.json|README\.md|\.gitignore)$
+
+# SPA routing for the React app served at the domain root.
+# Direct hits / refreshes on client routes (e.g. /fridge/search, /activate)
+# must fall back to index.html, WITHOUT hijacking the PHP API under /backend.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Let the PHP API handle its own routing.
+  RewriteRule ^backend/ - [L]
+
+  # Serve real files and directories as-is.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Everything else goes to the SPA entry point.
+  RewriteRule ^ /index.html [L]
+</IfModule>

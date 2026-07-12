@@ -21,6 +21,8 @@ frontend/.env.production.local
 backend/vendor/
 backend/uploads/
 backend/logs/
+backend/config/mail.local.php
+backend/config/database.local.php
 
 # Environment files
 .env

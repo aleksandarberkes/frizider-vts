@@ -1,4 +1,13 @@
-export const API_BASE_URL = 'http://localhost/frizider-vts/backend';
+// API base URL resolution:
+//  - honor an explicit REACT_APP_API_BASE_URL if provided at build time
+//  - in a production build, default to the same origin the app is served from
+//    (the PHP API lives at <origin>/backend) — works on http or https, any host
+//  - in local development, hit the XAMPP-served backend
+export const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  (process.env.NODE_ENV === 'production' && typeof window !== 'undefined'
+    ? `${window.location.origin}/backend`
+    : 'http://localhost/frizider-vts/backend');
 
 export class ApiError extends Error {
   status: number;

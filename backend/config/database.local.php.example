@@ -1,0 +1,8 @@
+<?php
+// Copy to database.local.php and fill in this machine's DB credentials.
+// This file (database.local.php) is gitignored, so `git pull` never touches it.
+define('DB_HOST', '127.0.0.1');   // use 127.0.0.1 on the server (avoids socket issues)
+define('DB_PORT', '3306');
+define('DB_NAME', 'your_db_name');
+define('DB_USER', 'your_db_user');
+define('DB_PASS', 'your_db_password');

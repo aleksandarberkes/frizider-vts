@@ -1,10 +1,19 @@
 <?php
 
-define('DB_HOST', 'localhost');
-define('DB_PORT', '3306');
-define('DB_NAME', 'fridge');
-define('DB_USER', 'root');
-define('DB_PASS', '');  // XAMPP default is no password
+// Environment-specific DB credentials live in an optional, gitignored
+// database.local.php next to this file (created per-machine, never committed),
+// so `git pull` never overwrites the server's credentials. Whatever it defines
+// wins; the defaults below are the local XAMPP values.
+$__dbLocal = __DIR__ . '/database.local.php';
+if (is_file($__dbLocal)) {
+    require $__dbLocal;
+}
+
+defined('DB_HOST') || define('DB_HOST', 'localhost');
+defined('DB_PORT') || define('DB_PORT', '3306');
+defined('DB_NAME') || define('DB_NAME', 'fridge');
+defined('DB_USER') || define('DB_USER', 'root');
+defined('DB_PASS') || define('DB_PASS', '');  // XAMPP default is no password
 
 function getConnection(): PDO {
     static $pdo = null;

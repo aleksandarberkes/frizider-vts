@@ -43,7 +43,7 @@ function RecipeCard({
           disabled={favoriteBusy}
           aria-label="Sacuvaj recept"
         >
-          <img src="/icons/fav-icon.svg" alt="Add to favorites icon" className={isFavorite ? 'add-to-favorite-icon add-to-favorite-icon-active' : 'add-to-favorite-icon'} />
+          <img src="/appicons/fav-icon.svg" alt="Add to favorites icon" className={isFavorite ? 'add-to-favorite-icon add-to-favorite-icon-active' : 'add-to-favorite-icon'} />
         </button>
       </div>
 

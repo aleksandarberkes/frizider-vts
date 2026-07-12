@@ -69,7 +69,7 @@ const RegisterForm = () => {
 						<div className="register-field">
 							<label htmlFor="firstName">Ime</label>
 							<div className="register-input-wrap">
-								<img src="/icons/user-icon.svg" alt="" className="register-input-icon" />
+								<img src="/appicons/user-icon.svg" alt="" className="register-input-icon" />
 								<input
 									className="register-input"
 									type="text"
@@ -103,7 +103,7 @@ const RegisterForm = () => {
 					<div className="register-field">
 						<label htmlFor="email">Email Adresa</label>
 						<div className="register-input-wrap">
-							<img src="/icons/email-icon.svg" alt="" className="register-input-icon" />
+							<img src="/appicons/email-icon.svg" alt="" className="register-input-icon" />
 							<input
 								className="register-input"
 								type="email"
@@ -121,7 +121,7 @@ const RegisterForm = () => {
 					<div className="register-field">
 						<label htmlFor="password">Lozinka</label>
 						<div className="register-input-wrap">
-							<img src="/icons/password-icon.svg" alt="" className="register-input-icon" />
+							<img src="/appicons/password-icon.svg" alt="" className="register-input-icon" />
 							<input
 								className="register-input"
 								type="password"
@@ -140,7 +140,7 @@ const RegisterForm = () => {
 					<div className="register-field">
 						<label htmlFor="confirmPassword">Potvrdite Lozinku</label>
 						<div className="register-input-wrap">
-							<img src="/icons/password-icon.svg" alt="" className="register-input-icon" />
+							<img src="/appicons/password-icon.svg" alt="" className="register-input-icon" />
 							<input
 								className="register-input"
 								type="password"

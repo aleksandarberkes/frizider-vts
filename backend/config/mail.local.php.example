@@ -1,0 +1,7 @@
+<?php
+// Optional. Copy to mail.local.php ONLY for local dev (log to file / Mailpit).
+// On the server, do NOT create this — mail.php then defaults to Postfix (localhost:25).
+define('SMTP_HOST', '');            // '' => write mail to backend/logs/mail.log
+define('MAIL_FROM', 'no-reply@localhost');
+define('MAIL_FROM_NAME', 'Moj Frizider (local)');
+define('FRONTEND_BASE_URL', 'http://localhost:3000');
