@@ -37,3 +37,6 @@ backend/config/database.local.php
 *.njsproj
 *.sln
 *.sw?
+
+# build artifact
+deploy_frizider.zip
