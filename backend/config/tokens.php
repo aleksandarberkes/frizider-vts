@@ -11,17 +11,21 @@ require_once __DIR__ . '/database.php';
  */
 function createUserToken(PDO $pdo, int $userId, string $type, int $ttlSeconds): string
 {
-    $token     = bin2hex(random_bytes(32));
-    $expiresAt = date('Y-m-d H:i:s', time() + $ttlSeconds);
+    $token = bin2hex(random_bytes(32));
+
+    // Compute the expiry with MySQL's own clock (NOW()) instead of PHP's, so it
+    // always matches the `expires_at > NOW()` check in consumeUserToken() even
+    // if PHP and MySQL are on different timezones. $ttlSeconds is an internal
+    // integer (never user input), so inlining it is safe.
+    $ttl = (int) $ttlSeconds;
 
     $pdo->prepare(
-        'INSERT INTO user_tokens (user_id, token, type, expires_at)
-         VALUES (:uid, :token, :type, :exp)'
+        "INSERT INTO user_tokens (user_id, token, type, expires_at)
+         VALUES (:uid, :token, :type, DATE_ADD(NOW(), INTERVAL {$ttl} SECOND))"
     )->execute([
         ':uid'   => $userId,
         ':token' => $token,
         ':type'  => $type,
-        ':exp'   => $expiresAt,
     ]);
 
     return $token;
